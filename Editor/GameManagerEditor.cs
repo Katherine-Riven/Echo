@@ -114,7 +114,10 @@ namespace Lucifer.Editor
                         menu.AddItem(new GUIContent(type.Name), false, () =>
                         {
                             list.serializedProperty.arraySize++;
-                            list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1).objectReferenceValue = CreateInstance(type);
+                            Object system = CreateInstance(type);
+                            system.name = type.Name;
+                            SerializedProperty newProperty = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
+                            newProperty.objectReferenceValue = system;
                             list.onChangedCallback?.Invoke(list);
                         });
                     }
