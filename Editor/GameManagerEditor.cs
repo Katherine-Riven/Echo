@@ -67,7 +67,7 @@ namespace Lucifer.Editor
                 rect = rect.AlignCenterY(20f);
                 Object system = systemList.serializedProperty.GetArrayElementAtIndex(index).objectReferenceValue;
                 GUI.Button(rect.AlignLeft(rect.width - 30f), system.GetType().Name, ReorderableList.defaultBehaviours.preButton);
-                if (GUI.Button(rect.AlignRight(30f), ReorderableList.defaultBehaviours.iconToolbarMinus, ReorderableList.defaultBehaviours.preButton))
+                if (GUI.Button(rect.AlignRight(30f), EditorHelper.TempContent("X"), ReorderableList.defaultBehaviours.preButton))
                 {
                     systemList.serializedProperty.DeleteArrayElementAtIndex(index);
                     systemList.onChangedCallback?.Invoke(systemList);
