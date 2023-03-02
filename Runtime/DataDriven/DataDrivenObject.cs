@@ -3,7 +3,7 @@ using UnityEngine;
 
 // ReSharper disable Unity.RedundantHideInInspectorAttribute
 
-namespace Lucifer.DataDriven
+namespace Echo.DataDriven
 {
     [Serializable]
     public abstract class DataDrivenObject : ScriptableObject

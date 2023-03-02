@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Lucifer
+namespace Echo
 {
     /// <summary>
     /// 游戏阶段

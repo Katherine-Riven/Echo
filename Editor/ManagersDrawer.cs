@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Lucifer.Editor
+namespace Echo.Editor
 {
     [DrawerPriority(DrawerPriorityLevel.WrapperPriority)]
     class ManagersDrawer : OdinValueDrawer<Manager[]>

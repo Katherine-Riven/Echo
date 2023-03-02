@@ -3,7 +3,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Lucifer.DataDriven.Editor
+namespace Echo.DataDriven.Editor
 {
     sealed class VariablesDrawer : OdinValueDrawer<IVariable[]>
     {

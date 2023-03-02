@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace Lucifer.DataDriven.Editor
+namespace Echo.DataDriven.Editor
 {
     sealed class TypeDropdown : EditorWindow
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Lucifer.Editor
+namespace Echo.Editor
 {
     public static class GUIStyleGetter
     {

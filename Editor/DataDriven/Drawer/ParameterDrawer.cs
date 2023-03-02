@@ -5,7 +5,7 @@ using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Lucifer.DataDriven.Editor
+namespace Echo.DataDriven.Editor
 {
     sealed class ParameterDrawer<T> : OdinValueDrawer<Parameter<T>>
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Lucifer
+namespace Echo
 {
     [AddComponentMenu("Lucifer/GameDirector")]
     public sealed class GameDirector : MonoBehaviour

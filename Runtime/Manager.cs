@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Lucifer
+namespace Echo
 {
     /// <summary>
     /// 游戏管理器

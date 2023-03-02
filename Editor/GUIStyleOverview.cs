@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Lucifer.Editor
+namespace Echo.Editor
 {
     class GUIStyleOverview : EditorWindow
     {

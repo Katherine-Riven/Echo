@@ -1,6 +1,6 @@
 using System;
 
-namespace Lucifer.DataDriven
+namespace Echo.DataDriven
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Class)]
     public sealed class InspectNameAttribute : Attribute

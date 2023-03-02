@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Lucifer.DataDriven
+namespace Echo.DataDriven
 {
     public interface IParameter
     {
