@@ -1,0 +1,18 @@
+{
+    "name": "EchoEditor.Asset",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7b975a824fd01de48be436c5954bb919",
+        "GUID:52b7be3db13bb234da90e3e2e62bd680",
+        "GUID:a362e18331054a648a6cda507aa8dcb8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
