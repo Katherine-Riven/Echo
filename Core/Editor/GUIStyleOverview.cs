@@ -2,11 +2,11 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Echo.Editor
+namespace EchoEditor
 {
     class GUIStyleOverview : EditorWindow
     {
-        [MenuItem("Lucifer/GUIStyle Overview")]
+        [MenuItem(nameof(Echo) + "/" + nameof(GUIStyleOverview))]
         static void Open()
         {
             GetWindow<GUIStyleOverview>("GUIStyle Overview").Show();

@@ -138,7 +138,7 @@ namespace EchoEditor.Abilities
             Coder coder = new Coder();
             coder.AppendLine("using UnityEngine;");
             coder.AppendLine();
-            using (coder.NewNamespace("Alkaid.Game"))
+            using (coder.NewNamespace(nameof(Echo) + "." + nameof(Abilities)))
             {
                 using (coder.NewStruct("public partial", "AbilityTag"))
                 {
@@ -170,7 +170,7 @@ namespace EchoEditor.Abilities
                 }
             }
 
-            File.WriteAllText("Assets/Alkaid/Script/Ability/AutoCode/AbilityTag.Definition.cs", coder.ToString(), Encoding.UTF8);
+            File.WriteAllText("Packages/Echo/Ability/Runtime/AutoCode/AbilityTag.Definition.cs", coder.ToString(), Encoding.UTF8);
 
             void CodeChildren(List<TagConfig> children, string modifier, string typeDefine)
             {

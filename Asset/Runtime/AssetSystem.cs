@@ -4,6 +4,8 @@ namespace Echo.Asset
 {
     internal sealed class AssetSystem : GameSystem, IAssetSystem
     {
+        public float iud;
+        
         #region Override
 
         protected override void OnInitialize()

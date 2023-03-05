@@ -1,4 +1,5 @@
 ﻿using System;
+using Echo;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Editor.Drawers;
 using Sirenix.Utilities.Editor;
@@ -6,10 +7,10 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Echo.Editor
+namespace EchoEditor
 {
     [DrawerPriority(DrawerPriorityLevel.WrapperPriority)]
-    class ManagersDrawer : OdinValueDrawer<GameSystem[]>
+    class SystemsDrawer : OdinValueDrawer<GameSystem[]>
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
@@ -65,13 +66,28 @@ namespace Echo.Editor
         }
     }
 
-    class ManagerDrawer : OdinValueDrawer<GameSystem>
+    class SystemDrawer : OdinValueDrawer<GameSystem>
     {
+        private PropertyTree m_Tree;
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            m_Tree = PropertyTree.Create(ValueEntry.SmartValue);
+        }
+
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            if (GUILayout.Button(GUIHelper.TempContent(Property.ValueEntry.WeakSmartValue?.GetType().Name)))
+            string systemName = Property.ValueEntry.WeakSmartValue?.GetType().Name;
+            Property.State.Expanded =  SirenixEditorGUI.Foldout(Property.State.Expanded, GUIHelper.TempContent(systemName)) && m_Tree.RootProperty.Children.Count > 0;
+            if (SirenixEditorGUI.BeginFadeGroup(UniqueDrawerKey.Create(Property, this), Property.State.Expanded))
             {
+                EditorGUI.indentLevel++;
+                m_Tree.Draw();
+                EditorGUI.indentLevel--;
             }
+            
+            SirenixEditorGUI.EndFadeGroup();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Echo.Editor
+namespace EchoEditor
 {
     public static class GUIStyleGetter
     {

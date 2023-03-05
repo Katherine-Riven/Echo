@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Echo;
 using Echo.Abilities;
-using Echo.Editor;
+using EchoEditor;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
