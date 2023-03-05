@@ -1,0 +1,16 @@
+{
+    "name": "Echo.Control",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7b975a824fd01de48be436c5954bb919"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

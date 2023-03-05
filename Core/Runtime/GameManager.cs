@@ -14,7 +14,7 @@ namespace Echo
 
         [SerializeField] private GameStage               m_LaunchStage = null;
         [SerializeField] private GameSystem[]            m_Systems     = new GameSystem[0];
-        [SerializeField] private GameFeatureController[] m_Features    = new GameFeatureController[0];
+        [SerializeField] private GameFeatureDriver[] m_Features    = new GameFeatureDriver[0];
 
         [NonSerialized] private GameStage        m_CurrentStage;
         [NonSerialized] private List<GameEntity> m_Entities         = new List<GameEntity>(DefaultEntityCapacity);
@@ -132,25 +132,28 @@ namespace Echo
 
         private void Update()
         {
+            GameEntityCollection collection = new GameEntityCollection(m_Entities);
             for (int i = 0, length = m_Features.Length; i < length; i++)
             {
-                m_Features[i].OnUpdate(m_Entities);
+                m_Features[i].OnUpdate(collection);
             }
         }
 
         private void FixedUpdate()
         {
+            GameEntityCollection collection = new GameEntityCollection(m_Entities);
             for (int i = 0, length = m_Features.Length; i < length; i++)
             {
-                m_Features[i].OnFixedUpdate(m_Entities);
+                m_Features[i].OnFixedUpdate(collection);
             }
         }
 
         private void LateUpdate()
         {
+            GameEntityCollection collection = new GameEntityCollection(m_Entities);
             for (int i = 0, length = m_Features.Length; i < length; i++)
             {
-                m_Features[i].OnLateUpdate(m_Entities);
+                m_Features[i].OnLateUpdate(collection);
             }
 
             foreach (GameEntity toAdd in m_ToAddEntities)
@@ -158,7 +161,7 @@ namespace Echo
                 toAdd.OnEnable();
                 for (int i = 0, length = m_Features.Length; i < length; i++)
                 {
-                    m_Features[i].OnEntityEnable(toAdd, toAdd.Order);
+                    m_Features[i].OnEntityEnable(toAdd);
                 }
 
                 m_Entities.Add(toAdd);

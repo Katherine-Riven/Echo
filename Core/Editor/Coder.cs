@@ -5,17 +5,17 @@ namespace Echo
 {
     public sealed class Coder
     {
-        private const    string        Indent = "    ";
+        private const    string        IndentText = "    ";
         private readonly StringBuilder m_Code = new StringBuilder();
 
-        private int m_Indent = 0;
+        public int IndentLevel = 0;
 
         #region Writer
 
         public void Clear()
         {
             m_Code.Clear();
-            m_Indent = 0;
+            IndentLevel = 0;
         }
 
         public override string ToString()
@@ -25,9 +25,9 @@ namespace Echo
 
         public Coder AppendLine(string text)
         {
-            for (int i = 0; i < m_Indent; i++)
+            for (int i = 0; i < IndentLevel; i++)
             {
-                text = Indent + text;
+                text = IndentText + text;
             }
 
             m_Code.AppendLine(text);
@@ -43,13 +43,13 @@ namespace Echo
         public Coder PushBlock()
         {
             AppendLine("{");
-            m_Indent++;
+            IndentLevel++;
             return this;
         }
 
         public Coder PopBlock()
         {
-            m_Indent--;
+            IndentLevel--;
             AppendLine("}");
             return this;
         }

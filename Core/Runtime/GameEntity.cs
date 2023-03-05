@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Echo
 {
@@ -10,12 +12,12 @@ namespace Echo
         /// <summary>
         /// 实例化Unity GameObject
         /// </summary>
-        GameObject Instantiate(Vector3 position, Quaternion rotation);
+        protected internal GameObject Instantiate(Vector3 position, Quaternion rotation);
 
         /// <summary>
         /// 释放Unity GameObject
         /// </summary>
-        void Release(GameObject instance);
+        protected internal void Release(GameObject instance);
     }
 
     /// <summary>
@@ -25,17 +27,21 @@ namespace Echo
     {
         protected GameEntity(string name, Vector3 position, Quaternion rotation, IGameEntityOrder order)
         {
-            Order              = order;
+            m_Order            = order;
             m_GameObject       = order.Instantiate(position, rotation);
             m_GameObject.name  = name;
             m_HasBeenDestroyed = false;
             GameManager.InternalAddEntity(this);
         }
 
-        internal readonly IGameEntityOrder Order;
+        private IGameEntityOrder m_Order;
+        private GameObject       m_GameObject;
+        private bool             m_HasBeenDestroyed;
 
-        private GameObject m_GameObject;
-        private bool       m_HasBeenDestroyed;
+        /// <summary>
+        /// 创建订单
+        /// </summary>
+        public IGameEntityOrder Order => m_Order;
 
         /// <summary>
         /// 释放已被销毁
@@ -73,7 +79,7 @@ namespace Echo
             }
 
             m_HasBeenDestroyed = true;
-            Order.Release(m_GameObject);
+            m_Order.Release(m_GameObject);
             GameManager.InternalRemoveEntity(this);
         }
 
@@ -89,6 +95,34 @@ namespace Echo
         /// </summary>
         protected internal virtual void OnDisable()
         {
+        }
+    }
+
+    /// <summary>
+    /// 游戏对象集合
+    /// </summary>
+    public readonly struct GameEntityCollection : IEnumerable<GameEntity>
+    {
+        internal GameEntityCollection(List<GameEntity> entities)
+        {
+            m_List = entities;
+        }
+
+        private readonly List<GameEntity> m_List;
+
+        public List<GameEntity>.Enumerator GetEnumerator()
+        {
+            return m_List.GetEnumerator();
+        }
+
+        IEnumerator<GameEntity> IEnumerable<GameEntity>.GetEnumerator()
+        {
+            return m_List.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return m_List.GetEnumerator();
         }
     }
 }

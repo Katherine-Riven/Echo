@@ -1,0 +1,20 @@
+{
+    "name": "EchoEditor.Control",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7b975a824fd01de48be436c5954bb919",
+        "GUID:52b7be3db13bb234da90e3e2e62bd680",
+        "GUID:6074018b9bd63b84bb7f9bfc329a2eb2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

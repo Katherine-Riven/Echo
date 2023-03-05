@@ -2,7 +2,7 @@
 
 namespace Echo.Abilities
 {
-    internal sealed class AbilityController : GameFeatureController
+    internal sealed class AbilityDriver : GameFeatureDriver
     {
         private List<Ability> m_UpdatingAbilities = new List<Ability>();
 
@@ -10,7 +10,7 @@ namespace Echo.Abilities
         {
         }
 
-        protected override void OnEntityEnable(GameEntity entity, IGameEntityOrder order)
+        protected override void OnEntityEnable(GameEntity entity)
         {
         }
 
@@ -27,7 +27,7 @@ namespace Echo.Abilities
             }
         }
 
-        protected override void OnUpdate(IReadOnlyList<GameEntity> entities)
+        protected override void OnUpdate(GameEntityCollection entities)
         {
             foreach (GameEntity entity in entities)
             {
@@ -43,11 +43,11 @@ namespace Echo.Abilities
             }
         }
 
-        protected override void OnFixedUpdate(IReadOnlyList<GameEntity> entities)
+        protected override void OnFixedUpdate(GameEntityCollection entities)
         {
         }
 
-        protected override void OnLateUpdate(IReadOnlyList<GameEntity> entities)
+        protected override void OnLateUpdate(GameEntityCollection entities)
         {
         }
 
