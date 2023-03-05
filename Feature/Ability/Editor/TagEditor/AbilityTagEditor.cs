@@ -170,7 +170,7 @@ namespace EchoEditor.Abilities
                 }
             }
 
-            File.WriteAllText("Packages/Echo/Ability/Runtime/AutoCode/AbilityTag.Definition.cs", coder.ToString(), Encoding.UTF8);
+            File.WriteAllText("Packages/Echo/Feature/Ability/Runtime/AutoCode/AbilityTag.Definition.cs", coder.ToString(), Encoding.UTF8);
 
             void CodeChildren(List<TagConfig> children, string modifier, string typeDefine)
             {
