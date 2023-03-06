@@ -22,6 +22,9 @@ namespace Echo.Control
         /// </summary>
         public TOwner Owner { get; }
 
+        /// <summary>
+        /// 当前状态
+        /// </summary>
         private TState m_CurrentState;
 
         /// <summary>

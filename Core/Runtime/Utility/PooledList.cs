@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Alkaid.Game
+namespace Echo.Utility
 {
     public struct PooledList<T> :
         IList<T>,

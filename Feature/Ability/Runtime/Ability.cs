@@ -18,7 +18,6 @@ namespace Echo.Abilities
         [SerializeField]     private AbilityTag           m_Tag           = new AbilityTag();
         [SerializeField]     private AbilityVariableTable m_VariableTable = new AbilityVariableTable();
         [SerializeReference] private AbilityFeature[]     m_Features      = new AbilityFeature[0];
-        [SerializeReference] private AbilityEffect[]      m_Effects       = new AbilityEffect[0];
 
         [NonSerialized] internal string               GUID;
         [NonSerialized] internal AbilityBehaviour[]   Behaviours;

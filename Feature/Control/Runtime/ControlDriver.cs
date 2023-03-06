@@ -4,8 +4,8 @@ namespace Echo.Control
 {
     internal sealed class ControlDriver : GameFeatureDriver
     {
-        public static readonly List<IController> s_Controllers = new List<IController>();
-        public static readonly List<IController> s_Execution   = new List<IController>();
+        internal static readonly List<IController> s_Controllers = new List<IController>();
+        internal static readonly List<IController> s_Execution   = new List<IController>();
 
         protected override void OnInitialize()
         {
