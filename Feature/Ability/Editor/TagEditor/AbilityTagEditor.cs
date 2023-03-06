@@ -16,7 +16,7 @@ namespace EchoEditor.Abilities
 {
     sealed class AbilityTagEditor : OdinEditorWindow
     {
-        [MenuItem(nameof(Echo) + "/" + nameof(AbilityTagEditor))]
+        [UnityEditor.MenuItem(nameof(Echo) + "/" + nameof(AbilityTagEditor))]
         private static void ShowWindow()
         {
             var window = GetWindow<AbilityTagEditor>("Ability Tag Editor");

@@ -26,7 +26,7 @@ namespace Echo.Abilities
     /// 能力参数
     /// </summary>
     [Serializable]
-    public sealed class AbilityParameter<T> : AbilityElement, ISerializationCallbackReceiver
+    public sealed class AbilityParameter<T> : AbilityBehaviour, ISerializationCallbackReceiver
     {
         [SerializeReference] private IAbilityParameter m_Reference;
         [SerializeField]     private string            m_FromContext;

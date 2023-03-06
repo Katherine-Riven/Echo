@@ -73,13 +73,13 @@ namespace Echo.Abilities
                 PropertyInfo[] properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
                 foreach (PropertyInfo property in properties)
                 {
-                    if (m_KeyMap.ContainsKey(property.Name))
+                    if (m_GetterMap.ContainsKey(property.Name))
                     {
                         continue;
                     }
 
                     Delegate func = Delegate.CreateDelegate(typeof(Func<>).MakeGenericType(property.PropertyType), this, property.GetMethod);
-                    m_KeyMap.Add(property.Name, func);
+                    m_GetterMap.Add(property.Name, func);
                 }
 
                 if (type.BaseType != null)
@@ -89,7 +89,7 @@ namespace Echo.Abilities
             }
         }
 
-        private readonly Dictionary<string, Delegate> m_KeyMap = new Dictionary<string, Delegate>();
+        private readonly Dictionary<string, Delegate> m_GetterMap = new Dictionary<string, Delegate>();
 
         /// <summary>
         /// 当前能力
@@ -107,7 +107,7 @@ namespace Echo.Abilities
         /// <param name="key">值的key，即GetProperty的名字</param>
         /// <typeparam name="T">值类型</typeparam>
         /// <returns>值</returns>
-        public T GetValue<T>(string key) => ((Func<T>) m_KeyMap[key]).Invoke();
+        public T GetValue<T>(string key) => ((Func<T>) m_GetterMap[key]).Invoke();
 
         void IDisposable.Dispose() => Release((TContext) this);
     }

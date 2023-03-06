@@ -1,43 +1,34 @@
 ﻿using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Echo.Abilities
 {
     /// <summary>
-    /// 能力功能
+    /// 能力功能，用于执行Effect
     /// </summary>
     [Serializable]
-    public abstract class AbilityFeature : AbilityElement
+    public abstract class AbilityFeature : AbilityBehaviour
     {
-        [SerializeField] [LabelText("生效标签")] private AbilityTag m_ActiveTag;
+        [SerializeField] [SerializeReference] private AbilityCondition m_Condition;
 
         /// <summary>
-        /// 生效标签
+        /// 当前是否有效
         /// </summary>
-        public AbilityTag ActiveTag => m_ActiveTag;
+        internal bool IsValid(IAbilityContext context) => m_Condition == null || m_Condition.Check(context);
 
         /// <summary>
-        /// 获取描述
-        /// </summary>
-        /// <returns></returns>
-        public abstract string GetTooltip();
-
-        /// <summary>
-        /// 当功能启用
+        /// 当启用时
         /// </summary>
         protected internal abstract void OnEnable();
 
         /// <summary>
-        /// 当功能更新
+        /// 当更新时
         /// </summary>
         protected internal abstract void OnUpdate();
 
         /// <summary>
-        /// 当功能失效
+        /// 当禁用时
         /// </summary>
         protected internal abstract void OnDisable();
-
-        public sealed override string ToString() => GetTooltip();
     }
 }

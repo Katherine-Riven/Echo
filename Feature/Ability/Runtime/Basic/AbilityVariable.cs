@@ -73,7 +73,6 @@ namespace Echo.Abilities
         /// <summary>
         /// 取值
         /// </summary>
-        /// <param name="context"></param>
         public T GetValue(IAbilityContext context) => m_Value;
 
         /// <summary>

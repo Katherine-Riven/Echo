@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -16,27 +15,15 @@ namespace Echo.Abilities
     {
         #region Field
 
-        [SerializeField] [LabelText("标签")] 
-        private AbilityTag m_Tag = new AbilityTag();
+        [SerializeField]     private AbilityTag           m_Tag           = new AbilityTag();
+        [SerializeField]     private AbilityVariableTable m_VariableTable = new AbilityVariableTable();
+        [SerializeReference] private AbilityFeature[]     m_Features      = new AbilityFeature[0];
+        [SerializeReference] private AbilityEffect[]      m_Effects       = new AbilityEffect[0];
 
-        [SerializeField] [LabelText("变量表")] 
-        private AbilityVariableTable m_VariableTable = new AbilityVariableTable();
-
-        [SerializeField] [LabelText("当启用时")] 
-        private AbilityEffects m_OnEnable = new AbilityEffects();
-
-        [SerializeField] [LabelText("当禁用时")] 
-        private AbilityEffects m_OnDisable = new AbilityEffects();
-
-        [SerializeReference] [LabelText("功能列表")]
-        private AbilityFeature[] m_Features = new AbilityFeature[0];
-
-        [HideInInspector] [SerializeReference] 
-        private AbilityElement[] m_Elements = new AbilityElement[0];
-
-        [NonSerialized] private  List<AbilityFeature> m_ActiveFeatures;
-        [NonSerialized] private  AbilityTagSet        m_TagSet;
         [NonSerialized] internal string               GUID;
+        [NonSerialized] internal AbilityBehaviour[]   Behaviours;
+        [NonSerialized] private  AbilityTagSet        m_TagSet = new AbilityTagSet();
+        [NonSerialized] private  List<AbilityFeature> m_ActiveFeatures;
 
         #endregion
 
@@ -45,7 +32,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 激活状态
         /// </summary>
-        public bool IsActive => Owner != null && Owner.Abilities.Contains(this);
+        public bool IsActive { get; private set; }
 
         /// <summary>
         /// 持有者
@@ -63,7 +50,6 @@ namespace Echo.Abilities
         public void AddTag(in AbilityTag tag)
         {
             m_TagSet.Add(tag);
-            UpdateActiveFeatures();
         }
 
         /// <summary>
@@ -72,7 +58,6 @@ namespace Echo.Abilities
         public void RemoveTag(in AbilityTag tag)
         {
             m_TagSet.Remove(tag);
-            UpdateActiveFeatures();
         }
 
         /// <summary>
@@ -81,7 +66,6 @@ namespace Echo.Abilities
         public void ClearTag()
         {
             m_TagSet.Clear();
-            UpdateActiveFeatures();
         }
 
         /// <summary>
@@ -89,7 +73,7 @@ namespace Echo.Abilities
         /// </summary>
         public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
         {
-            return new AbilityModifierQuery<T>(Owner.Modifiers);
+            return new AbilityModifierQuery<T>(this, Owner.Modifiers);
         }
 
         #endregion
@@ -101,20 +85,26 @@ namespace Echo.Abilities
         /// </summary>
         internal void OnEnable(IAbilityOwner owner, IAbilityInitializer initializer)
         {
+            IsActive         = true;
             Owner            = owner;
             m_ActiveFeatures = ListPool<AbilityFeature>.Get();
-            m_TagSet         = GenericPool<AbilityTagSet>.Get();
             initializer?.InitializeVariables(m_VariableTable);
-            foreach (AbilityElement element in m_Elements)
+            foreach (AbilityBehaviour behaviour in Behaviours)
             {
-                element.Ability = this;
-                element.OnAbilityEnable();
+                behaviour.Ability = this;
+                behaviour.OnAbilityEnable();
             }
 
             m_TagSet.Reset(m_Tag);
             using AbilityContext context = AbilityContext.GetPooled(this);
-            m_OnEnable.Invoke(context);
-            UpdateActiveFeatures();
+            foreach (AbilityFeature feature in m_Features)
+            {
+                if (feature.IsValid(context))
+                {
+                    m_ActiveFeatures.Add(feature);
+                    feature.OnEnable();
+                }
+            }
         }
 
         /// <summary>
@@ -122,9 +112,31 @@ namespace Echo.Abilities
         /// </summary>
         internal void OnUpdate()
         {
-            for (int i = 0, length = m_ActiveFeatures.Count; i < length; i++)
+            using AbilityContext context = AbilityContext.GetPooled(this);
+            foreach (AbilityFeature feature in m_Features)
             {
-                m_ActiveFeatures[i].OnUpdate();
+                bool isValid     = feature.IsValid(context);
+                int  activeIndex = m_ActiveFeatures.IndexOf(feature);
+                if (isValid == activeIndex >= 0)
+                {
+                    continue;
+                }
+
+                if (isValid)
+                {
+                    m_ActiveFeatures.Add(feature);
+                    feature.OnEnable();
+                }
+                else
+                {
+                    m_ActiveFeatures.RemoveAt(activeIndex);
+                    feature.OnDisable();
+                }
+            }
+
+            foreach (AbilityFeature activeFeature in m_ActiveFeatures)
+            {
+                activeFeature.OnUpdate();
             }
         }
 
@@ -133,54 +145,17 @@ namespace Echo.Abilities
         /// </summary>
         internal void OnDisable()
         {
-            using AbilityContext context = AbilityContext.GetPooled(this);
-            m_OnDisable.Invoke(context);
-
+            IsActive = false;
             foreach (AbilityFeature activeFeature in m_ActiveFeatures)
             {
                 activeFeature.OnDisable();
             }
 
             ListPool<AbilityFeature>.Release(m_ActiveFeatures);
-
-            m_TagSet.Clear();
-            GenericPool<AbilityTagSet>.Release(m_TagSet);
-            Owner            = null;
             m_ActiveFeatures = null;
-            m_TagSet         = null;
-            foreach (AbilityElement element in m_Elements)
+            foreach (AbilityBehaviour behaviour in Behaviours)
             {
-                element.OnAbilityDisable();
-                element.Ability = null;
-            }
-        }
-
-        #endregion
-
-        #region Utility
-
-        private void UpdateActiveFeatures()
-        {
-            for (int i = 0, length = m_Features.Length; i < length; i++)
-            {
-                AbilityFeature feature     = m_Features[i];
-                int            activeIndex = m_ActiveFeatures.IndexOf(feature);
-                if (activeIndex >= 0)
-                {
-                    if (Tag.HasAllTag(feature.ActiveTag) == false)
-                    {
-                        feature.OnDisable();
-                        m_ActiveFeatures.RemoveAt(activeIndex);
-                    }
-                }
-                else
-                {
-                    if (Tag.HasAllTag(feature.ActiveTag))
-                    {
-                        feature.OnEnable();
-                        m_ActiveFeatures.Add(feature);
-                    }
-                }
+                behaviour.OnAbilityDisable();
             }
         }
 

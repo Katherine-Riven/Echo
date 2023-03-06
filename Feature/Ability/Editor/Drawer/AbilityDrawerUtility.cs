@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Echo;
 using Echo.Abilities;
-using EchoEditor;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine;
 
@@ -38,13 +36,13 @@ namespace EchoEditor.Abilities
 
                 if (type.IsSubclassOf(typeof(AbilityFeature)))
                 {
-                    s_FeatureItems.Add(new GenericSelectorItem<Type>(AbilityMenuItemAttribute.GetMenuPath(type, typeof(AbilityFeature)), type));
+                    s_FeatureItems.Add(new GenericSelectorItem<Type>(MenuItemAttribute.GetMenuPath(type, typeof(AbilityFeature)), type));
                 }
                 else if (type.IsSubclassOf(typeof(AbilityEffect)))
                 {
-                    GenericSelectorItem<Type> item = new GenericSelectorItem<Type>(AbilityMenuItemAttribute.GetMenuPath(type, typeof(AbilityEffect)), type);
+                    GenericSelectorItem<Type> item = new GenericSelectorItem<Type>(MenuItemAttribute.GetMenuPath(type, typeof(AbilityEffect)), type);
                     s_EffectItems.Add(item);
-                    if (type.IsSubclassOf(typeof(AbilityCancelableEffect)))
+                    if (type.IsDefined(typeof(CancelableEffectAttribute)))
                     {
                         s_CancelableEffectItems.Add(item);
                     }

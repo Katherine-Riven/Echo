@@ -20,7 +20,8 @@ namespace Echo.Abilities
             {
                 foreach (Ability ability in abilityOwner.Abilities)
                 {
-                    //ReleaseAbility(ability);
+                    ability.OnDisable();
+                    AbilityAPI.ReleaseAbility(ability);
                 }
 
                 abilityOwner.Abilities.Clear();

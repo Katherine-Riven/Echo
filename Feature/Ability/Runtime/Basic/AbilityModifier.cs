@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using ListEnumerator = System.Collections.Generic.List<Echo.Abilities.IAbilityModifier>.Enumerator;
 
 namespace Echo.Abilities
 {
@@ -21,16 +22,18 @@ namespace Echo.Abilities
     /// </summary>
     public struct AbilityModifierQuery<T> : IEnumerable<T> where T : IAbilityModifier
     {
-        private List<IAbilityModifier> m_List;
-
-        internal AbilityModifierQuery(List<IAbilityModifier> modifiers)
+        internal AbilityModifierQuery(Ability ability, List<IAbilityModifier> modifiers)
         {
-            m_List = modifiers;
+            m_Ability = ability;
+            m_List    = modifiers;
         }
+
+        private Ability                m_Ability;
+        private List<IAbilityModifier> m_List;
 
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(m_List);
+            return new Enumerator(m_Ability, m_List.GetEnumerator());
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -48,21 +51,25 @@ namespace Echo.Abilities
         /// </summary>
         public struct Enumerator : IEnumerator<T>
         {
-            internal Enumerator(List<IAbilityModifier> modifiers)
+            internal Enumerator(Ability ability, ListEnumerator modifiers)
             {
-                m_List  = modifiers;
-                m_Index = -1;
+                m_Ability    = ability;
+                m_Enumerator = modifiers;
+                m_Current    = default;
             }
 
-            private List<IAbilityModifier> m_List;
-            private int                    m_Index;
+            private Ability        m_Ability;
+            private ListEnumerator m_Enumerator;
+            private T              m_Current;
 
             public bool MoveNext()
             {
-                while (++m_Index < m_List.Count)
+                while (m_Enumerator.MoveNext())
                 {
-                    if (m_List[m_Index] is T)
+                    IAbilityModifier modifier = m_Enumerator.Current;
+                    if (modifier is T temp && modifier.IsMatch(m_Ability))
                     {
+                        m_Current = temp;
                         return true;
                     }
                 }
@@ -70,18 +77,18 @@ namespace Echo.Abilities
                 return false;
             }
 
-            public void Reset()
-            {
-                m_Index = -1;
-            }
 
-            public T Current => (T) m_List[m_Index];
+            public T Current => m_Current;
+
+            void IEnumerator.Reset()
+            {
+            }
 
             object IEnumerator.Current => Current;
 
             public void Dispose()
             {
-                Reset();
+                m_Enumerator.Dispose();
             }
         }
     }

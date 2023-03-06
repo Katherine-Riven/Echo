@@ -6,6 +6,8 @@ namespace Echo.Abilities
 {
     public static class AbilityAPI
     {
+        private static readonly List<AbilityBehaviour> s_BehaviourCollector = new List<AbilityBehaviour>();
+
         private class Factory : IDisposable
         {
             private string                         m_GUID;
@@ -25,8 +27,12 @@ namespace Echo.Abilities
 
             public Ability CreateInstance()
             {
+                AbilityBehaviour.s_Collector = s_BehaviourCollector;
                 Ability ability = JsonUtility.FromJson<Ability>(m_Json);
-                ability.GUID = m_GUID;
+                ability.GUID       = m_GUID;
+                ability.Behaviours = s_BehaviourCollector.ToArray();
+                s_BehaviourCollector.Clear();
+                AbilityBehaviour.s_Collector = null;
                 m_ReferenceCount++;
                 return ability;
             }
@@ -83,13 +89,7 @@ namespace Echo.Abilities
             if (owner.Abilities.Remove(ability))
             {
                 ability.OnDisable();
-                Factory factory = s_FactoryMap[ability.GUID];
-                factory.ReleaseInstance();
-                if (factory.ReferenceCount <= 0)
-                {
-                    factory.Dispose();
-                    s_FactoryMap.Remove(ability.GUID);
-                }
+                ReleaseAbility(ability);
             }
         }
 
@@ -111,6 +111,12 @@ namespace Echo.Abilities
         public static void RemoveModifier(this IAbilityOwner owner, IAbilityModifier modifier)
         {
             owner.Modifiers.Remove(modifier);
+        }
+
+        internal static void ReleaseAbility(Ability ability)
+        {
+            Factory factory = s_FactoryMap[ability.GUID];
+            factory.ReleaseInstance();
         }
     }
 }
