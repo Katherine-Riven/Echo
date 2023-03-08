@@ -63,8 +63,7 @@ namespace Echo.Abilities
         /// </summary>
         /// <param name="owner">持有者</param>
         /// <param name="reference">能力资源引用</param>
-        /// <param name="initializer">能力初始化</param>
-        public static Ability EnableAbility(this IAbilityOwner owner, IAbilityReference reference, IAbilityInitializer initializer = null)
+        public static Ability EnableAbility(this IAbilityOwner owner, IAbilityReference reference)
         {
             Factory factory;
             if (s_FactoryMap.TryGetValue(reference.GUID, out factory) == false)
@@ -74,8 +73,8 @@ namespace Echo.Abilities
             }
 
             Ability ability = factory.CreateInstance();
-            ability.OnEnable(owner, initializer);
-            owner.Abilities.Add(ability);
+            ability.OnInitialize(owner);
+            owner.ToEnableAbilities.Add(ability);
             return ability;
         }
 
@@ -86,10 +85,9 @@ namespace Echo.Abilities
         /// <param name="ability">能力实例</param>
         public static void DisableAbility(this IAbilityOwner owner, Ability ability)
         {
-            if (owner.Abilities.Remove(ability))
+            if (owner.Abilities.Contains(ability) && owner.ToDisableAbilities.Contains(ability) == false)
             {
-                ability.OnDisable();
-                ReleaseAbility(ability);
+                owner.ToDisableAbilities.Add(ability);
             }
         }
 

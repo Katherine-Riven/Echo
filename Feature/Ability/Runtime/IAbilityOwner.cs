@@ -21,11 +21,21 @@ namespace Echo.Abilities
         /// <summary>
         /// 当前能力列表
         /// </summary>
-        protected internal List<Ability> Abilities { get; }
+        protected internal List<Ability> Abilities { get; set; }
 
+        /// <summary>
+        /// 待启用能力列表
+        /// </summary>
+        protected internal List<Ability> ToEnableAbilities { get; set; }
+        
+        /// <summary>
+        /// 待禁用能力列表
+        /// </summary>
+        protected internal List<Ability> ToDisableAbilities { get; set; }
+        
         /// <summary>
         /// 当前修改器列表
         /// </summary>
-        protected internal List<IAbilityModifier> Modifiers { get; }
+        protected internal List<IAbilityModifier> Modifiers { get; set; }
     }
 }

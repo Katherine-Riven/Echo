@@ -10,21 +10,14 @@ using UnityEngine;
 
 namespace EchoEditor.Abilities
 {
-    class AbilityVariableTableDrawer : OdinValueDrawer<AbilityVariableTable>
+    [DrawerPriority(DrawerPriorityLevel.WrapperPriority)]
+    class AbilityVariableCollectionDrawer<T> : OdinValueDrawer<T> where T : ICollection<IAbilityVariable>
     {
-        private InspectorProperty m_ArrayProperty;
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-            m_ArrayProperty = Property.FindChild(x => x.Name == "m_Variables", false);
-        }
-
         protected override void DrawPropertyLayout(GUIContent label)
         {
             Action nextCustomAddFunction = CollectionDrawerStaticInfo.NextCustomAddFunction;
             CollectionDrawerStaticInfo.NextCustomAddFunction = AddNewVariable;
-            m_ArrayProperty.Draw(label);
+            CallNextDrawer(label);
             CollectionDrawerStaticInfo.NextCustomAddFunction = nextCustomAddFunction;
         }
 
@@ -41,10 +34,10 @@ namespace EchoEditor.Abilities
                 }
 
                 object              newVariable = Activator.CreateInstance(type);
-                ICollectionResolver resolver    = (ICollectionResolver) m_ArrayProperty.ChildResolver;
+                ICollectionResolver resolver    = (ICollectionResolver) Property.ChildResolver;
                 resolver.QueueAdd(new object[] {newVariable});
                 resolver.ApplyChanges();
-                m_ArrayProperty.ValueEntry.ApplyChanges();
+                Property.ValueEntry.ApplyChanges();
             };
 
             selector.ShowInPopup(Event.current.mousePosition);

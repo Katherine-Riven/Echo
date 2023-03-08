@@ -15,9 +15,9 @@ namespace Echo.Abilities
     {
         #region Field
 
-        [SerializeField]     private AbilityTag           m_Tag           = new AbilityTag();
-        [SerializeField]     private AbilityVariableTable m_VariableTable = new AbilityVariableTable();
-        [SerializeReference] private AbilityFeature[]     m_Features      = new AbilityFeature[0];
+        [SerializeField]     private AbilityTag         m_Tag       = new AbilityTag();
+        [SerializeReference] private IAbilityVariable[] m_Variables = new IAbilityVariable[0];
+        [SerializeReference] private AbilityFeature[]   m_Features  = new AbilityFeature[0];
 
         [NonSerialized] internal string               GUID;
         [NonSerialized] internal AbilityBehaviour[]   Behaviours;
@@ -68,6 +68,22 @@ namespace Echo.Abilities
         }
 
         /// <summary>
+        /// 获取变量
+        /// </summary>
+        public AbilityVariable<T> GetVariable<T>(string variableName)
+        {
+            for (int i = 0; i < m_Variables.Length; i++)
+            {
+                if (m_Variables[i].Name == variableName && m_Variables[i] is AbilityVariable<T> result)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// 查询修改器
         /// </summary>
         public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
@@ -80,14 +96,20 @@ namespace Echo.Abilities
         #region Life Event
 
         /// <summary>
-        /// 当获取时
+        /// 初始化
         /// </summary>
-        internal void OnEnable(IAbilityOwner owner, IAbilityInitializer initializer)
+        internal void OnInitialize(IAbilityOwner owner)
         {
-            IsActive         = true;
             Owner            = owner;
             m_ActiveFeatures = ListPool<AbilityFeature>.Get();
-            initializer?.InitializeVariables(m_VariableTable);
+        }
+
+        /// <summary>
+        /// 当获取时
+        /// </summary>
+        internal void OnEnable()
+        {
+            IsActive = true;
             foreach (AbilityBehaviour behaviour in Behaviours)
             {
                 behaviour.Ability = this;
@@ -150,12 +172,13 @@ namespace Echo.Abilities
                 activeFeature.OnDisable();
             }
 
-            ListPool<AbilityFeature>.Release(m_ActiveFeatures);
-            m_ActiveFeatures = null;
             foreach (AbilityBehaviour behaviour in Behaviours)
             {
                 behaviour.OnAbilityDisable();
             }
+
+            ListPool<AbilityFeature>.Release(m_ActiveFeatures);
+            m_ActiveFeatures = null;
         }
 
         #endregion
