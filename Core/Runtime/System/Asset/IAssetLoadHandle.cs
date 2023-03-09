@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Echo
@@ -36,10 +37,15 @@ namespace Echo
         T Result { get; }
 
         /// <summary>
+        /// 加载任务
+        /// </summary>
+        Task<T> Task { get; }
+
+        /// <summary>
         /// 等待加载完毕
         /// </summary>
         T WaitForCompletion();
-
+        
         /// <summary>
         /// 当加载成功
         /// </summary>

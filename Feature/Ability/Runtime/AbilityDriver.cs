@@ -25,7 +25,7 @@ namespace Echo.Abilities
                 foreach (Ability ability in abilityOwner.Abilities)
                 {
                     ability.OnDisable();
-                    AbilityAPI.ReleaseAbility(ability);
+                    AbilityFactory.ReleaseAbility(ability);
                 }
 
                 ListPool<Ability>.Release(abilityOwner.Abilities);
