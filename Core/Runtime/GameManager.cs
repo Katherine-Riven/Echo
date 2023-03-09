@@ -14,7 +14,7 @@ namespace Echo
 
         [SerializeField] private GameStage               m_LaunchStage = null;
         [SerializeField] private GameSystem[]            m_Systems     = new GameSystem[0];
-        [SerializeField] private GameFeatureDriver[] m_Features    = new GameFeatureDriver[0];
+        [SerializeField] private GameDriver[] m_Features    = new GameDriver[0];
 
         [NonSerialized] private GameStage        m_CurrentStage;
         [NonSerialized] private List<GameEntity> m_Entities         = new List<GameEntity>(DefaultEntityCapacity);

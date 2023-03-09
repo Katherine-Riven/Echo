@@ -20,8 +20,11 @@ namespace Echo.Abilities
     [Serializable]
     public abstract class AbilityVariable<T> : IAbilityVariable, IAbilityParameter<T>
     {
-        [SerializeField] private string m_Name;
-        [SerializeField] private T      m_Value;
+        [SerializeField]
+        private string m_Name;
+
+        [SerializeField]
+        private T m_Value;
 
         /// <summary>
         /// 取名称

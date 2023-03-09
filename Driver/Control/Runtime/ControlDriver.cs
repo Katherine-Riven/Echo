@@ -2,7 +2,7 @@
 
 namespace Echo.Control
 {
-    internal sealed class ControlDriver : GameFeatureDriver
+    internal sealed class ControlDriver : GameDriver
     {
         internal static readonly List<IController> s_Controllers = new List<IController>();
         internal static readonly List<IController> s_Execution   = new List<IController>();

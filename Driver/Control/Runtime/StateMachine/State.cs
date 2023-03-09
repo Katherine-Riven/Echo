@@ -18,17 +18,13 @@
     /// </summary>
     public abstract class State<TMachine, TState, TOwner>
         where TMachine : StateMachine<TMachine, TState, TOwner>
-        where TState : State<TMachine, TState, TOwner>, new()
+        where TState : State<TMachine, TState, TOwner>
+        where TOwner : IControllable
     {
         /// <summary>
         /// 状态机
         /// </summary>
         public TMachine Machine { get; internal set; }
-
-        /// <summary>
-        /// 持有者
-        /// </summary>
-        public TOwner Owner => Machine.Owner;
 
         /// <summary>
         /// 当进入时

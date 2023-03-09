@@ -6,21 +6,12 @@ namespace Echo.Control
     /// <summary>
     /// 状态机
     /// </summary>
-    public abstract class StateMachine<TMachine, TState, TOwner> : IController
+    public abstract class StateMachine<TMachine, TState, TOwner> : IController<TOwner>
         where TMachine : StateMachine<TMachine, TState, TOwner>
-        where TState : State<TMachine, TState, TOwner>, new()
+        where TState : State<TMachine, TState, TOwner>
+        where TOwner : IControllable
     {
         private static readonly List<TState> s_StatePool = new List<TState>();
-
-        protected StateMachine(TOwner owner)
-        {
-            Owner = owner;
-        }
-
-        /// <summary>
-        /// 持有者
-        /// </summary>
-        public TOwner Owner { get; }
 
         /// <summary>
         /// 当前状态
@@ -35,7 +26,7 @@ namespace Echo.Control
         /// <summary>
         /// 切换状态
         /// </summary>
-        public void ChangeState<T>() where T : TState
+        public void ChangeState<T>() where T : TState, new()
         {
             m_CurrentState.OnExit();
             m_CurrentState.Machine = null;
@@ -52,7 +43,7 @@ namespace Echo.Control
                 }
             }
 
-            m_CurrentState         ??= new TState();
+            m_CurrentState         ??= new T();
             m_CurrentState.Machine =   (TMachine) this;
             m_CurrentState.OnEnter();
         }
@@ -60,7 +51,7 @@ namespace Echo.Control
         /// <summary>
         /// 切换状态
         /// </summary>
-        public void ChangeState<T, TArg>(in TArg arg) where T : TState, IStateWithArg<TArg>
+        public void ChangeState<T, TArg>(in TArg arg) where T : TState, IStateWithArg<TArg>, new()
         {
             m_CurrentState.OnExit();
             m_CurrentState.Machine = null;
@@ -77,11 +68,13 @@ namespace Echo.Control
                 }
             }
 
-            m_CurrentState         ??= new TState();
+            m_CurrentState         ??= new T();
             m_CurrentState.Machine =   (TMachine) this;
             // ReSharper disable once SuspiciousTypeConversion.Global
             ((IStateWithArg<TArg>) m_CurrentState).OnEnter(arg);
         }
+
+        TOwner IController<TOwner>.Target { get; set; }
 
         void IController.OnEnable()
         {

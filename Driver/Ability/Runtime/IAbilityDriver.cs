@@ -6,7 +6,7 @@ namespace Echo.Abilities
     /// <summary>
     /// 能力容器
     /// </summary>
-    public interface IAbilityOwner : IGameFeature
+    public interface IAbilityDriver : IGameDrive
     {
         /// <summary>
         /// 位置

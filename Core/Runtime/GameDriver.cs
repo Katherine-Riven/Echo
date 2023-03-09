@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Echo
 {
     /// <summary>
-    /// 游戏功能
+    /// Entity具备的游戏驱动接口
     /// </summary>
-    public interface IGameFeature
+    public interface IGameDrive
     {
     }
 
     /// <summary>
-    /// 游戏功能驱动
+    /// 游戏驱动
     /// </summary>
-    public abstract class GameFeatureDriver : ScriptableObject
+    public abstract class GameDriver : ScriptableObject
     {
         /// <summary>
         /// 当游戏初始化

@@ -9,7 +9,8 @@ namespace Echo.Abilities
     [Serializable]
     public abstract class AbilityFeature : AbilityBehaviour
     {
-        [SerializeField] [SerializeReference] private AbilityCondition m_Condition;
+        [SerializeField, SerializeReference]
+        private AbilityCondition m_Condition;
 
         /// <summary>
         /// 当前是否有效

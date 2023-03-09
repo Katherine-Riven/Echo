@@ -28,9 +28,14 @@ namespace Echo.Abilities
     [Serializable]
     public sealed class AbilityParameter<T> : AbilityBehaviour, ISerializationCallbackReceiver
     {
-        [SerializeReference] private IAbilityParameter m_Reference;
-        [SerializeField]     private string            m_FromContext;
-        [SerializeField]     private T                 m_DirectValue;
+        [SerializeReference]
+        private IAbilityParameter m_Reference;
+
+        [SerializeField]
+        private string m_FromContext;
+
+        [SerializeField]
+        private T m_DirectValue;
 
         /// <summary>
         /// 取值

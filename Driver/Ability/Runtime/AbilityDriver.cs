@@ -2,7 +2,7 @@
 
 namespace Echo.Abilities
 {
-    internal sealed class AbilityDriver : GameFeatureDriver
+    internal sealed class AbilityDriver : GameDriver
     {
         protected override void OnInitialize()
         {
@@ -10,7 +10,7 @@ namespace Echo.Abilities
 
         protected override void OnEntityEnable(GameEntity entity)
         {
-            if (entity is IAbilityOwner abilityOwner)
+            if (entity is IAbilityDriver abilityOwner)
             {
                 abilityOwner.Abilities          = ListPool<Ability>.Get();
                 abilityOwner.ToEnableAbilities  = ListPool<Ability>.Get();
@@ -20,7 +20,7 @@ namespace Echo.Abilities
 
         protected override void OnEntityDisable(GameEntity entity)
         {
-            if (entity is IAbilityOwner abilityOwner)
+            if (entity is IAbilityDriver abilityOwner)
             {
                 foreach (Ability ability in abilityOwner.Abilities)
                 {
@@ -41,7 +41,7 @@ namespace Echo.Abilities
         {
             foreach (GameEntity entity in entities)
             {
-                if (entity is IAbilityOwner abilityOwner)
+                if (entity is IAbilityDriver abilityOwner)
                 {
                     foreach (Ability ability in abilityOwner.Abilities)
                     {
@@ -59,7 +59,7 @@ namespace Echo.Abilities
         {
             foreach (GameEntity entity in entities)
             {
-                if (entity is IAbilityOwner abilityOwner)
+                if (entity is IAbilityDriver abilityOwner)
                 {
                     foreach (Ability ability in abilityOwner.ToEnableAbilities)
                     {

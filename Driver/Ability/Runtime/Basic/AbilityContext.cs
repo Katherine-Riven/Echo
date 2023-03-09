@@ -17,7 +17,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 持有者
         /// </summary>
-        IAbilityOwner Owner { get; }
+        IAbilityDriver Driver { get; }
 
         /// <summary>
         /// 取值
@@ -99,7 +99,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 持有者
         /// </summary>
-        public IAbilityOwner Owner => Ability.Owner;
+        public IAbilityDriver Driver => Ability.Driver;
 
         /// <summary>
         /// 取值

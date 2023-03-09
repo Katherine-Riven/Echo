@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-// ReSharper disable UseArrayEmptyMethod
+// ReSharper disable Unity.RedundantSerializeFieldAttribute
+// ReSharper disable UnassignedField.Local
 
 namespace Echo.Abilities
 {
@@ -15,14 +16,19 @@ namespace Echo.Abilities
     {
         #region Field
 
-        [SerializeField]     private AbilityTag         m_Tag       = new AbilityTag();
-        [SerializeReference] private IAbilityVariable[] m_Variables = new IAbilityVariable[0];
-        [SerializeReference] private AbilityFeature[]   m_Features  = new AbilityFeature[0];
+        [SerializeField]
+        private AbilityTag m_Tag;
 
-        [NonSerialized] internal string               GUID;
-        [NonSerialized] internal AbilityBehaviour[]   Behaviours;
-        [NonSerialized] private  AbilityTagSet        m_TagSet = new AbilityTagSet();
-        [NonSerialized] private  List<AbilityFeature> m_ActiveFeatures;
+        [SerializeField, SerializeReference]
+        private IAbilityVariable[] m_Variables;
+
+        [SerializeField, SerializeReference]
+        private AbilityFeature[] m_Features;
+
+        internal string               GUID;
+        internal AbilityBehaviour[]   Behaviours;
+        private  AbilityTagSet        m_TagSet = new AbilityTagSet();
+        private  List<AbilityFeature> m_ActiveFeatures;
 
         #endregion
 
@@ -36,7 +42,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 持有者
         /// </summary>
-        public IAbilityOwner Owner { get; private set; }
+        public IAbilityDriver Driver { get; private set; }
 
         /// <summary>
         /// 标签
@@ -88,7 +94,7 @@ namespace Echo.Abilities
         /// </summary>
         public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
         {
-            return new AbilityModifierQuery<T>(this, Owner.Modifiers);
+            return new AbilityModifierQuery<T>(this, Driver.Modifiers);
         }
 
         #endregion
@@ -98,9 +104,9 @@ namespace Echo.Abilities
         /// <summary>
         /// 初始化
         /// </summary>
-        internal void OnInitialize(IAbilityOwner owner)
+        internal void OnInitialize(IAbilityDriver driver)
         {
-            Owner            = owner;
+            Driver           = driver;
             m_ActiveFeatures = ListPool<AbilityFeature>.Get();
         }
 

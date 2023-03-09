@@ -106,7 +106,8 @@ namespace Echo.Abilities
             m_TagValue = tagValue;
         }
 
-        [SerializeField] private int m_TagValue;
+        [SerializeField]
+        private int m_TagValue;
 
         #endregion
 
