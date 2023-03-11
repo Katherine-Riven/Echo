@@ -20,15 +20,4 @@
         /// </summary>
         protected internal void OnDisable();
     }
-
-    /// <summary>
-    /// 控制器
-    /// </summary>
-    public interface IController<T> : IController where T : IControllable
-    {
-        /// <summary>
-        /// 控制目标
-        /// </summary>
-        protected internal T Target { get; set; }
-    }
 }

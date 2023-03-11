@@ -7,10 +7,9 @@
     public interface IStateWithArg<T>
     {
         /// <summary>
-        /// 进入状态
+        /// 初始化
         /// </summary>
-        /// <param name="arg"></param>
-        protected internal void OnEnter(in T arg);
+        protected internal void SetUp(in T arg);
     }
 
     /// <summary>
@@ -19,7 +18,6 @@
     public abstract class State<TMachine, TState, TOwner>
         where TMachine : StateMachine<TMachine, TState, TOwner>
         where TState : State<TMachine, TState, TOwner>
-        where TOwner : IControllable
     {
         /// <summary>
         /// 状态机
@@ -27,9 +25,19 @@
         public TMachine Machine { get; internal set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public TOwner Owner => Machine.Owner;
+
+        /// <summary>
         /// 当进入时
         /// </summary>
         protected internal abstract void OnEnter();
+
+        /// <summary>
+        /// 下一步状态是否变换
+        /// </summary>
+        protected internal abstract bool MoveNext(out TState nextState);
 
         /// <summary>
         /// 当更新时
