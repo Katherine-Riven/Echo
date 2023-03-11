@@ -1,6 +1,6 @@
 ﻿namespace Echo.Control
 {
-    public static class ControlExtension
+    public static class ControlAPI
     {
         /// <summary>
         /// 启用

@@ -105,12 +105,12 @@ namespace EchoEditor.Abilities
             Variable[] GetVariableTree()
             {
                 HashSet<string> existVariables = new HashSet<string>();
-                string[]        assets         = AssetDatabase.FindAssets($"t:{nameof(AbilityAsset)}");
+                string[]        assets         = AssetDatabase.FindAssets($"t:{nameof(AbilityProfile)}");
                 foreach (string guid in assets)
                 {
                     string             path                  = AssetDatabase.GUIDToAssetPath(guid);
-                    AbilityAsset       abilityAsset          = AssetDatabase.LoadAssetAtPath<AbilityAsset>(path);
-                    SerializedObject   serializedObject      = new SerializedObject(abilityAsset);
+                    AbilityProfile     abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
+                    SerializedObject   serializedObject      = new SerializedObject(abilityProfile);
                     SerializedProperty variableArrayProperty = serializedObject.FindProperty(VariablesAbsolutePath);
                     for (int i = 0; i < variableArrayProperty.arraySize; i++)
                     {
@@ -195,12 +195,12 @@ namespace EchoEditor.Abilities
                         string oldName = Name;
                         IsEditing = false;
                         Name      = EditingName;
-                        string[] assets = AssetDatabase.FindAssets($"t:{nameof(AbilityAsset)}");
+                        string[] assets = AssetDatabase.FindAssets($"t:{nameof(AbilityProfile)}");
                         foreach (string guid in assets)
                         {
                             string             path                  = AssetDatabase.GUIDToAssetPath(guid);
-                            AbilityAsset       abilityAsset          = AssetDatabase.LoadAssetAtPath<AbilityAsset>(path);
-                            SerializedObject   serializedObject      = new SerializedObject(abilityAsset);
+                            AbilityProfile     abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
+                            SerializedObject   serializedObject      = new SerializedObject(abilityProfile);
                             SerializedProperty variableArrayProperty = serializedObject.FindProperty(VariablesAbsolutePath);
                             for (int i = 0; i < variableArrayProperty.arraySize; i++)
                             {

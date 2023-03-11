@@ -9,7 +9,7 @@
         /// <summary>
         /// 初始化
         /// </summary>
-        protected internal void SetUp(in T arg);
+        protected internal void OnEnter(in T arg);
     }
 
     /// <summary>
@@ -33,11 +33,6 @@
         /// 当进入时
         /// </summary>
         protected internal abstract void OnEnter();
-
-        /// <summary>
-        /// 下一步状态是否变换
-        /// </summary>
-        protected internal abstract bool MoveNext(out TState nextState);
 
         /// <summary>
         /// 当更新时

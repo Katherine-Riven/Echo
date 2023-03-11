@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace EchoEditor.Abilities
 {
-    [CustomEditor(typeof(AbilityAsset))]
+    [CustomEditor(typeof(AbilityProfile), true)]
     sealed class AbilityEditor : OdinEditor
     {
         private InspectorProperty m_AbilityProperty;
@@ -25,10 +25,31 @@ namespace EchoEditor.Abilities
             GUILayout.BeginVertical(SirenixGUIStyles.None);
             GUILayout.Space((float) (-margin.top + 2));
             Tree.BeginDraw(true);
+
+            SirenixEditorGUI.BeginBox("Profile");
+            DrawProfile();
+            SirenixEditorGUI.EndBox();
+
+            SirenixEditorGUI.BeginBox("Ability");
             m_AbilityProperty.Draw(null);
+            SirenixEditorGUI.EndBox();
+
             Tree.EndDraw();
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+        }
+
+        private void DrawProfile()
+        {
+            foreach (var child in Tree.RootProperty.Children)
+            {
+                if (child == m_AbilityProperty)
+                {
+                    continue;
+                }
+
+                child.Draw();
+            }
         }
     }
 }

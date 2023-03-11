@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Echo.Control
 {
@@ -17,7 +16,7 @@ namespace Echo.Control
         /// <summary>
         /// 获取一个state
         /// </summary>
-        public T GetState<T>() where T : TState, new()
+        private static T GetState<T>() where T : TState, new()
         {
             T state = null;
             for (int i = 0; i < s_StatePool.Count; i++)
@@ -30,30 +29,7 @@ namespace Echo.Control
                 }
             }
 
-            state         ??= new T();
-            state.Machine =   (TMachine) this;
-            return state;
-        }
-
-        /// <summary>
-        /// 获取一个带参数的State
-        /// </summary>
-        public T GetState<T, TArg>(in TArg arg) where T : TState, IStateWithArg<TArg>, new()
-        {
-            T state = null;
-            for (int i = 0; i < s_StatePool.Count; i++)
-            {
-                if (s_StatePool[i].GetType() == typeof(T))
-                {
-                    state = (T) s_StatePool[i];
-                    s_StatePool.RemoveAt(i);
-                    break;
-                }
-            }
-
-            state         ??= new T();
-            state.Machine =   (TMachine) this;
-            state.SetUp(arg);
+            state ??= new T();
             return state;
         }
 
@@ -72,27 +48,53 @@ namespace Echo.Control
         /// <summary>
         /// 默认状态
         /// </summary>
-        protected abstract TState DefaultState { get; }
+        protected abstract void EnterDefaultState();
 
-        void IController.OnEnable()
+        /// <summary>
+        /// 切换状态
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void ChangeState<T>() where T : TState, new()
         {
-            m_CurrentState         = DefaultState ?? throw new NullReferenceException("Default state is null, make sure it's not null.");
-            m_CurrentState.Machine = (TMachine) this;
-            m_CurrentState.OnEnter();
-        }
-
-        void IController.OnUpdate()
-        {
-            if (m_CurrentState.MoveNext(out TState nextState))
+            if (m_CurrentState != null)
             {
                 m_CurrentState.OnExit();
                 m_CurrentState.Machine = null;
                 s_StatePool.Add(m_CurrentState);
-                m_CurrentState         = nextState ?? throw new NullReferenceException("Want to move next state, but next state is null. Make sure it's not null.");
-                m_CurrentState.Machine = (TMachine) this;
-                m_CurrentState.OnEnter();
             }
 
+            m_CurrentState         = GetState<T>();
+            m_CurrentState.Machine = (TMachine) this;
+            m_CurrentState.OnEnter();
+        }
+
+        /// <summary>
+        /// 切换状态
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TArg"></typeparam>
+        public void ChangeState<T, TArg>(in TArg arg) where T : TState, IStateWithArg<TArg>, new()
+        {
+            if (m_CurrentState != null)
+            {
+                m_CurrentState.OnExit();
+                m_CurrentState.Machine = null;
+                s_StatePool.Add(m_CurrentState);
+            }
+
+            m_CurrentState         = GetState<T>();
+            m_CurrentState.Machine = (TMachine) this;
+            ((IStateWithArg<TArg>) m_CurrentState).OnEnter(in arg);
+        }
+
+        void IController.OnEnable()
+        {
+            EnterDefaultState();
+        }
+
+        void IController.OnUpdate()
+        {
             m_CurrentState.OnUpdate();
         }
 

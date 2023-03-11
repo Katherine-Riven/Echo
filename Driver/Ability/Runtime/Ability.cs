@@ -25,7 +25,6 @@ namespace Echo.Abilities
         [SerializeField, SerializeReference]
         private AbilityFeature[] m_Features;
 
-        internal string               GUID;
         internal AbilityBehaviour[]   Behaviours;
         private  AbilityTagSet        m_TagSet = new AbilityTagSet();
         private  List<AbilityFeature> m_ActiveFeatures;

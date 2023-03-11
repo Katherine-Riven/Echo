@@ -6,10 +6,10 @@
         /// 启用能力
         /// </summary>
         /// <param name="driver">持有者</param>
-        /// <param name="reference">能力资源引用</param>
-        public static Ability EnableAbility(this IAbilityDriver driver, IAbilityReference reference)
+        /// <param name="profile">能力描述符</param>
+        public static Ability EnableAbility(this IAbilityDriver driver, AbilityProfile profile)
         {
-            Ability ability = AbilityFactory.CreateAbility(reference);
+            Ability ability = AbilitySerializer.FromProfile(profile);
             ability.OnInitialize(driver);
             driver.ToEnableAbilities.Add(ability);
             return ability;

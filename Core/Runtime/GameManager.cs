@@ -12,14 +12,19 @@ namespace Echo
         private const  int         DefaultEntityCapacity = 256;
         private static GameManager s_Instance;
 
-        [SerializeField] private GameStage               m_LaunchStage = null;
-        [SerializeField] private GameSystem[]            m_Systems     = new GameSystem[0];
-        [SerializeField] private GameDriver[] m_Features    = new GameDriver[0];
+        [SerializeField]
+        private GameStage m_LaunchStage = null;
 
-        [NonSerialized] private GameStage        m_CurrentStage;
-        [NonSerialized] private List<GameEntity> m_Entities         = new List<GameEntity>(DefaultEntityCapacity);
-        [NonSerialized] private List<GameEntity> m_ToAddEntities    = new List<GameEntity>();
-        [NonSerialized] private List<GameEntity> m_ToRemoveEntities = new List<GameEntity>();
+        [SerializeField]
+        private GameSystem[] m_Systems = new GameSystem[0];
+
+        [SerializeField]
+        private GameDriver[] m_Features = new GameDriver[0];
+
+        private GameStage        m_CurrentStage;
+        private List<GameEntity> m_Entities         = new List<GameEntity>(DefaultEntityCapacity);
+        private List<GameEntity> m_ToAddEntities    = new List<GameEntity>();
+        private List<GameEntity> m_ToRemoveEntities = new List<GameEntity>();
 
         #endregion
 
@@ -158,25 +163,29 @@ namespace Echo
 
             foreach (GameEntity toAdd in m_ToAddEntities)
             {
+                m_Entities.Add(toAdd);
                 toAdd.OnEnable();
                 for (int i = 0, length = m_Features.Length; i < length; i++)
                 {
                     m_Features[i].OnEntityEnable(toAdd);
                 }
-
-                m_Entities.Add(toAdd);
             }
 
-            m_ToAddEntities.Clear();
             foreach (GameEntity toRemove in m_ToRemoveEntities)
             {
                 m_Entities.Remove(toRemove);
-                toRemove.OnDisable();
                 for (int i = 0, length = m_Features.Length; i < length; i++)
                 {
                     m_Features[i].OnEntityDisable(toRemove);
                 }
+
+                toRemove.OnDisable();
+                toRemove.OnDestroy();
+                toRemove.Order.Release(toRemove.GameObject);
             }
+
+            m_ToAddEntities.Clear();
+            m_ToRemoveEntities.Clear();
         }
 
         private void OnDestroy()

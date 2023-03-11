@@ -79,7 +79,6 @@ namespace Echo
             }
 
             m_HasBeenDestroyed = true;
-            m_Order.Release(m_GameObject);
             GameManager.InternalRemoveEntity(this);
         }
 
@@ -94,6 +93,13 @@ namespace Echo
         /// 当禁用时
         /// </summary>
         protected internal virtual void OnDisable()
+        {
+        }
+
+        /// <summary>
+        /// 当销毁时
+        /// </summary>
+        protected internal virtual void OnDestroy()
         {
         }
     }
