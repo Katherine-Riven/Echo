@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
+// ReSharper disable UseArrayEmptyMethod
 // ReSharper disable Unity.RedundantSerializeFieldAttribute
-// ReSharper disable UnassignedField.Local
 
 namespace Echo.Abilities
 {
@@ -12,7 +12,7 @@ namespace Echo.Abilities
     /// 能力配置
     /// </summary>
     [Serializable]
-    public sealed class Ability
+    public sealed class Ability : ISerializationCallbackReceiver
     {
         #region Field
 
@@ -22,7 +22,7 @@ namespace Echo.Abilities
         [SerializeField, SerializeReference]
         private IAbilityVariable[] m_Variables;
 
-        [SerializeField, SerializeReference]
+        [SerializeField]
         private AbilityFeature[] m_Features;
 
         internal AbilityBehaviour[]   Behaviours;
@@ -89,6 +89,23 @@ namespace Echo.Abilities
         }
 
         /// <summary>
+        /// 获取功能
+        /// </summary>
+        public AbilityFeature GetFeature(string featureName)
+        {
+            if (string.IsNullOrEmpty(featureName)) return null;
+            for (int i = 0; i < m_Features.Length; i++)
+            {
+                if (m_Features[i].Name == featureName)
+                {
+                    return m_Features[i];
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// 查询修改器
         /// </summary>
         public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
@@ -105,7 +122,7 @@ namespace Echo.Abilities
         /// </summary>
         internal void OnInitialize(IAbilityOwner owner)
         {
-            Owner           = owner;
+            Owner            = owner;
             m_ActiveFeatures = ListPool<AbilityFeature>.Get();
         }
 
@@ -187,5 +204,17 @@ namespace Echo.Abilities
         }
 
         #endregion
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            m_Variables ??= new IAbilityVariable[0];
+            m_Features  ??= new AbilityFeature[0];
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            m_Variables ??= new IAbilityVariable[0];
+            m_Features  ??= new AbilityFeature[0];
+        }
     }
 }

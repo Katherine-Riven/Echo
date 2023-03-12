@@ -45,7 +45,7 @@ namespace Echo.Avatar
                     slot.Default.SetActive(false);
                 }
 
-                avatar.OffsetProfile.GetOffset(value.AssetGUID, out Vector3 position, out Quaternion rotation);
+                avatar.Profile.GetOffset(value.AssetGUID, out Vector3 position, out Quaternion rotation);
                 GameObject gameObject = GameManager.AssetSystem.Instantiate(value, position, rotation);
                 gameObject.transform.SetParent(slot.Root, false);
                 slot.Active = gameObject;
@@ -72,7 +72,7 @@ namespace Echo.Avatar
                 return;
             }
 
-            avatar.OffsetProfile.GetOffset(accessory.AssetGUID, out Vector3 position, out Quaternion rotation);
+            avatar.Profile.GetOffset(accessory.AssetGUID, out Vector3 position, out Quaternion rotation);
             GameObject instance = GameManager.AssetSystem.Instantiate(accessory, position, rotation);
             instance.transform.SetParent(avatar.Accessory.Root, false);
             avatar.Accessory.Add(accessory.AssetGUID, instance);

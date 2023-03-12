@@ -11,7 +11,7 @@ namespace Echo.Abilities
     /// 能力效果
     /// </summary>
     [Serializable]
-    public abstract class AbilityEffect
+    public abstract class AbilityEffect : AbilityBehaviour
     {
         /// <summary>
         /// 执行

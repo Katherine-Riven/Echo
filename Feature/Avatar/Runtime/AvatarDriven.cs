@@ -6,7 +6,7 @@ namespace Echo.Avatar
     internal sealed class AvatarDriven : GameFeatureDriven
     {
         [SerializeField]
-        private AvatarOffsetProfile m_OffsetProfile;
+        private AvatarProfile m_Profile;
 
         protected override void OnInitialize()
         {
@@ -14,12 +14,12 @@ namespace Echo.Avatar
 
         protected override void OnEntityEnable(GameEntity entity)
         {
-            if (entity is IAvatar avatar && entity.GameObject.TryGetComponent(out AvatarProfile profile))
+            if (entity is IAvatar avatar && entity.GameObject.TryGetComponent(out AvatarMapper profile))
             {
-                avatar.OffsetProfile = m_OffsetProfile;
-                avatar.PartMap       = DictionaryPool<AvatarPartType, AvatarPart>.Get();
-                avatar.SlotMap       = DictionaryPool<AvatarSlotType, AvatarSlot>.Get();
-                avatar.Accessory     = GenericPool<AvatarAccessory>.Get();
+                avatar.Profile   = m_Profile;
+                avatar.PartMap   = DictionaryPool<AvatarPartType, AvatarPart>.Get();
+                avatar.SlotMap   = DictionaryPool<AvatarSlotType, AvatarSlot>.Get();
+                avatar.Accessory = GenericPool<AvatarAccessory>.Get();
 
                 avatar.PartMap.Add(AvatarPartType.Body,  new AvatarPart(profile.GetPartRenderer(AvatarPartType.Body)));
                 avatar.PartMap.Add(AvatarPartType.Cloak, new AvatarPart(profile.GetPartRenderer(AvatarPartType.Body)));
@@ -69,7 +69,7 @@ namespace Echo.Avatar
                 DictionaryPool<AvatarPartType, AvatarPart>.Release(avatar.PartMap);
                 DictionaryPool<AvatarSlotType, AvatarSlot>.Release(avatar.SlotMap);
                 GenericPool<AvatarAccessory>.Release(avatar.Accessory);
-                avatar.OffsetProfile  = null;
+                avatar.Profile        = null;
                 avatar.PartMap        = null;
                 avatar.SlotMap        = null;
                 avatar.Accessory.Root = null;
