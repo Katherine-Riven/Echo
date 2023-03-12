@@ -3,16 +3,16 @@
 namespace Echo
 {
     /// <summary>
-    /// Entity具备的游戏驱动接口
+    /// 游戏功能接口
     /// </summary>
-    public interface IGameDrive
+    public interface IGameFeature
     {
     }
 
     /// <summary>
     /// 游戏驱动
     /// </summary>
-    public abstract class GameDriver : ScriptableObject
+    public abstract class GameFeatureDriven : ScriptableObject
     {
         /// <summary>
         /// 当游戏初始化

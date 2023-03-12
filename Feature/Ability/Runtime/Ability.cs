@@ -41,7 +41,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 持有者
         /// </summary>
-        public IAbilityDriver Driver { get; private set; }
+        public IAbilityOwner Owner { get; private set; }
 
         /// <summary>
         /// 标签
@@ -93,7 +93,7 @@ namespace Echo.Abilities
         /// </summary>
         public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
         {
-            return new AbilityModifierQuery<T>(this, Driver.Modifiers);
+            return new AbilityModifierQuery<T>(this, Owner.Modifiers);
         }
 
         #endregion
@@ -103,9 +103,9 @@ namespace Echo.Abilities
         /// <summary>
         /// 初始化
         /// </summary>
-        internal void OnInitialize(IAbilityDriver driver)
+        internal void OnInitialize(IAbilityOwner owner)
         {
-            Driver           = driver;
+            Owner           = owner;
             m_ActiveFeatures = ListPool<AbilityFeature>.Get();
         }
 

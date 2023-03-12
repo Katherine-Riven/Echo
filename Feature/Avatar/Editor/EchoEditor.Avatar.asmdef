@@ -1,0 +1,20 @@
+{
+    "name": "EchoEditor.Avatar",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7b975a824fd01de48be436c5954bb919",
+        "GUID:52b7be3db13bb234da90e3e2e62bd680",
+        "GUID:824afdd2739dd3c458c6ef8c3b0cd2e4"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

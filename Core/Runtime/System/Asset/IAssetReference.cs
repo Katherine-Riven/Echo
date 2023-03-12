@@ -8,5 +8,6 @@ namespace Echo
     /// <typeparam name="T">资源类型</typeparam>
     public interface IAssetReference<T> where T : Object
     {
+        string AssetGUID { get; }
     }
 }

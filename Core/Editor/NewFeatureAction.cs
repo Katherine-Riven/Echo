@@ -14,7 +14,7 @@ namespace EchoEditor
         private static void Execute()
         {
             NewFeatureAction action = CreateInstance<NewFeatureAction>();
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, "Feature", EditorIcons.UnityFolderIcon, String.Empty);
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, "New Feature", EditorIcons.UnityFolderIcon, String.Empty);
         }
 
         public override void Action(int instanceId, string pathName, string resourceFile)

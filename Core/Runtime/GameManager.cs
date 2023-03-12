@@ -19,7 +19,7 @@ namespace Echo
         private GameSystem[] m_Systems = new GameSystem[0];
 
         [SerializeField]
-        private GameDriver[] m_Features = new GameDriver[0];
+        private GameFeatureDriven[] m_Features = new GameFeatureDriven[0];
 
         private GameStage        m_CurrentStage;
         private List<GameEntity> m_Entities         = new List<GameEntity>(DefaultEntityCapacity);

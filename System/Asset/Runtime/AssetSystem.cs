@@ -1,12 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Echo.Asset
 {
     internal sealed class AssetSystem : GameSystem, IAssetSystem
     {
-        public float iud;
-
         #region Override
 
         protected override void OnInitialize()
@@ -19,19 +18,44 @@ namespace Echo.Asset
 
         #endregion
 
-        public IAssetLoadHandle<T> LoadAsync<T>(IAssetReference<T> reference) where T : Object
+        public T LoadAsset<T>(IAssetReference<T> reference) where T : Object
         {
-            return new AssetLoadHandle<T>(Addressables.LoadAssetAsync<T>(reference));
+            return Addressables.LoadAssetAsync<T>(reference).WaitForCompletion();
         }
 
-        public void Release(Object asset)
+        public Task<T> LoadAssetAsync<T>(IAssetReference<T> reference) where T : Object
+        {
+            return Addressables.LoadAssetAsync<T>(reference).Task;
+        }
+
+        public void ReleaseAsset(Object asset)
         {
             Addressables.Release(asset);
         }
 
-        public void Release<T>(IAssetLoadHandle<T> handle) where T : Object
+        public GameObject Instantiate(IAssetReference<GameObject> reference, Vector3 position, Quaternion rotation, Transform parent = null)
         {
-            Addressables.Release(((AssetLoadHandle<T>) handle).Handle);
+            return Addressables.InstantiateAsync(reference, position, rotation, parent).WaitForCompletion();
+        }
+
+        public GameObject Instantiate(IAssetReference<GameObject> reference, Transform parent = null, bool instantiateInWorldSpace = false)
+        {
+            return Addressables.InstantiateAsync(reference, parent, instantiateInWorldSpace).WaitForCompletion();
+        }
+
+        public Task<GameObject> InstantiateAsync(IAssetReference<GameObject> reference, Vector3 position, Quaternion rotation, Transform parent = null)
+        {
+            return Addressables.InstantiateAsync(reference, position, rotation, parent).Task;
+        }
+
+        public Task<GameObject> InstantiateAsync(IAssetReference<GameObject> reference, Transform parent = null, bool instantiateInWorldSpace = false)
+        {
+            return Addressables.InstantiateAsync(reference, parent, instantiateInWorldSpace).Task;
+        }
+
+        public void ReleaseInstance(GameObject instance)
+        {
+            Addressables.Release(instance);
         }
     }
 }
