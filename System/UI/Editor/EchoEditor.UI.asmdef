@@ -1,0 +1,20 @@
+{
+    "name": "EchoEditor.UI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7b975a824fd01de48be436c5954bb919",
+        "GUID:52b7be3db13bb234da90e3e2e62bd680",
+        "GUID:96c90486077b226428768e60408ac670"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

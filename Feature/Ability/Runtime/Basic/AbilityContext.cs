@@ -12,7 +12,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 当前能力
         /// </summary>
-        Ability Ability { get; }
+        IAbility Ability { get; }
 
         /// <summary>
         /// 持有者
@@ -26,6 +26,11 @@ namespace Echo.Abilities
         /// <typeparam name="T">值类型</typeparam>
         /// <returns>值</returns>
         T GetValue<T>(string key);
+
+        /// <summary>
+        /// 查询修改器
+        /// </summary>
+        AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier;
     }
 
     /// <summary>
@@ -42,7 +47,7 @@ namespace Echo.Abilities
         /// </summary>
         /// <param name="ability">当前能力</param>
         /// <returns>上下文实例</returns>
-        public static TContext GetPooled(Ability ability)
+        public static TContext GetPooled(IAbility ability)
         {
             TContext context;
             if (s_Pool.TryPop(out context) == false)
@@ -94,7 +99,7 @@ namespace Echo.Abilities
         /// <summary>
         /// 当前能力
         /// </summary>
-        public Ability Ability { get; private set; }
+        public IAbility Ability { get; private set; }
 
         /// <summary>
         /// 持有者
@@ -108,6 +113,14 @@ namespace Echo.Abilities
         /// <typeparam name="T">值类型</typeparam>
         /// <returns>值</returns>
         public T GetValue<T>(string key) => ((Func<T>) m_GetterMap[key]).Invoke();
+        
+        /// <summary>
+        /// 查询修改器
+        /// </summary>
+        public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
+        {
+            return new AbilityModifierQuery<T>(Ability, Owner.Modifiers);
+        }
 
         void IDisposable.Dispose() => Release((TContext) this);
     }

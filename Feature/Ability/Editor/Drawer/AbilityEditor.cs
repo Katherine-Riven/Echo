@@ -19,20 +19,22 @@ namespace EchoEditor.Abilities
 
         protected override void DrawTree()
         {
+            if (m_AbilityProperty == null)
+            {
+                base.DrawTree();
+                return;
+            }
+
             RectOffset margin = SirenixGUIStyles.PropertyMargin.margin;
             GUILayout.BeginHorizontal(SirenixGUIStyles.None);
             GUILayout.Space((float) -margin.left);
             GUILayout.BeginVertical(SirenixGUIStyles.None);
             GUILayout.Space((float) (-margin.top + 2));
             Tree.BeginDraw(true);
-
-            SirenixEditorGUI.BeginBox("Profile");
-            DrawProfile();
-            SirenixEditorGUI.EndBox();
-
-            SirenixEditorGUI.BeginBox("Ability");
-            m_AbilityProperty.Draw(null);
-            SirenixEditorGUI.EndBox();
+            foreach (InspectorProperty child in m_AbilityProperty.Children)
+            {
+                child.Draw();
+            }
 
             Tree.EndDraw();
             GUILayout.EndVertical();

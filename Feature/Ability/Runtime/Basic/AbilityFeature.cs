@@ -45,9 +45,9 @@ namespace Echo.Abilities
         }
 
         /// <summary>
-        /// 当启用时
+        /// 启用
         /// </summary>
-        internal void OnEnable()
+        public void Enable()
         {
             for (int i = 0; i < m_Triggers.Length; i++)
             {
@@ -61,9 +61,9 @@ namespace Echo.Abilities
         }
 
         /// <summary>
-        /// 当更新时
+        /// 更新
         /// </summary>
-        internal void OnUpdate()
+        public void Update()
         {
             for (int i = 0; i < m_Triggers.Length; i++)
             {
@@ -72,9 +72,9 @@ namespace Echo.Abilities
         }
 
         /// <summary>
-        /// 当禁用时
+        /// 禁用
         /// </summary>
-        internal void OnDisable()
+        public void Disable()
         {
             for (int i = 0; i < m_Triggers.Length; i++)
             {

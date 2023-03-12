@@ -3,10 +3,24 @@
 namespace Echo
 {
     /// <summary>
-    /// 游戏功能接口
+    /// 游戏实体功能接口
     /// </summary>
-    public interface IGameFeature
+    public interface IGameEntityFeature
     {
+        /// <summary>
+        /// 位置
+        /// </summary>
+        Vector3 Position { get; }
+
+        /// <summary>
+        /// 旋转
+        /// </summary>
+        Quaternion Rotation { get; }
+
+        /// <summary>
+        /// 变换
+        /// </summary>
+        Transform Transform { get; }
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace Echo.Abilities
         /// </summary>
         /// <param name="abilityInstance">目标能力</param>
         /// <returns>返回是否适用</returns>
-        bool IsMatch(Ability abilityInstance);
+        bool IsMatch(IAbility abilityInstance);
     }
 
     /// <summary>
@@ -22,13 +22,13 @@ namespace Echo.Abilities
     /// </summary>
     public struct AbilityModifierQuery<T> : IEnumerable<T> where T : IAbilityModifier
     {
-        internal AbilityModifierQuery(Ability ability, List<IAbilityModifier> modifiers)
+        internal AbilityModifierQuery(IAbility ability, List<IAbilityModifier> modifiers)
         {
             m_Ability = ability;
             m_List    = modifiers;
         }
 
-        private Ability                m_Ability;
+        private IAbility               m_Ability;
         private List<IAbilityModifier> m_List;
 
         public Enumerator GetEnumerator()
@@ -51,14 +51,14 @@ namespace Echo.Abilities
         /// </summary>
         public struct Enumerator : IEnumerator<T>
         {
-            internal Enumerator(Ability ability, ListEnumerator modifiers)
+            internal Enumerator(IAbility ability, ListEnumerator modifiers)
             {
                 m_Ability    = ability;
                 m_Enumerator = modifiers;
                 m_Current    = default;
             }
 
-            private Ability        m_Ability;
+            private IAbility       m_Ability;
             private ListEnumerator m_Enumerator;
             private T              m_Current;
 

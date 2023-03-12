@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Pool;
 
 // ReSharper disable UseArrayEmptyMethod
 // ReSharper disable Unity.RedundantSerializeFieldAttribute
@@ -12,31 +10,21 @@ namespace Echo.Abilities
     /// 能力配置
     /// </summary>
     [Serializable]
-    public sealed class Ability : ISerializationCallbackReceiver
+    public abstract class Ability : IAbility, ISerializationCallbackReceiver
     {
-        #region Field
-
         [SerializeField]
         private AbilityTag m_Tag;
 
         [SerializeField, SerializeReference]
         private IAbilityVariable[] m_Variables;
 
-        [SerializeField]
-        private AbilityFeature[] m_Features;
-
-        internal AbilityBehaviour[]   Behaviours;
-        private  AbilityTagSet        m_TagSet = new AbilityTagSet();
-        private  List<AbilityFeature> m_ActiveFeatures;
-
-        #endregion
-
-        #region API
+        internal AbilityBehaviour[] Behaviours;
+        private  AbilityTagSet      m_TagSet = new AbilityTagSet();
 
         /// <summary>
-        /// 激活状态
+        /// 是否生效中
         /// </summary>
-        public bool IsActive { get; private set; }
+        public bool IsEnable { get; private set; }
 
         /// <summary>
         /// 持有者
@@ -65,15 +53,7 @@ namespace Echo.Abilities
         }
 
         /// <summary>
-        /// 清空额外的标签
-        /// </summary>
-        public void ClearTag()
-        {
-            m_TagSet.Clear();
-        }
-
-        /// <summary>
-        /// 获取变量
+        /// 查找变量
         /// </summary>
         public AbilityVariable<T> GetVariable<T>(string variableName)
         {
@@ -88,133 +68,86 @@ namespace Echo.Abilities
             return null;
         }
 
-        /// <summary>
-        /// 获取功能
-        /// </summary>
-        public AbilityFeature GetFeature(string featureName)
-        {
-            if (string.IsNullOrEmpty(featureName)) return null;
-            for (int i = 0; i < m_Features.Length; i++)
-            {
-                if (m_Features[i].Name == featureName)
-                {
-                    return m_Features[i];
-                }
-            }
+        protected abstract AbilityTag DefaultTag { get; }
 
-            return null;
+        /// <summary>
+        /// 查找功能
+        /// </summary>
+        public abstract AbilityFeature GetFeature(string featureName);
+
+        protected abstract void OnEnable();
+        protected abstract void OnUpdate();
+        protected abstract void OnDisable();
+
+        protected virtual void OnBeforeSerialize()
+        {
+        }
+
+        protected virtual void OnAfterDeserialize()
+        {
+        }
+
+        bool IAbility.IsEnable
+        {
+            get => IsEnable;
+            set => IsEnable = value;
+        }
+
+        IAbilityOwner IAbility.Owner
+        {
+            get => Owner;
+            set => Owner = value;
         }
 
         /// <summary>
-        /// 查询修改器
+        /// 当启用时
         /// </summary>
-        public AbilityModifierQuery<T> QueryModifier<T>() where T : IAbilityModifier
+        void IAbility.OnEnable()
         {
-            return new AbilityModifierQuery<T>(this, Owner.Modifiers);
-        }
-
-        #endregion
-
-        #region Life Event
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        internal void OnInitialize(IAbilityOwner owner)
-        {
-            Owner            = owner;
-            m_ActiveFeatures = ListPool<AbilityFeature>.Get();
-        }
-
-        /// <summary>
-        /// 当获取时
-        /// </summary>
-        internal void OnEnable()
-        {
-            IsActive = true;
             foreach (AbilityBehaviour behaviour in Behaviours)
             {
-                behaviour.Ability = this;
                 behaviour.OnAbilityEnable();
             }
 
-            m_TagSet.Reset(m_Tag);
-            using AbilityContext context = AbilityContext.GetPooled(this);
-            foreach (AbilityFeature feature in m_Features)
-            {
-                if (feature.IsValid(context))
-                {
-                    m_ActiveFeatures.Add(feature);
-                    feature.OnEnable();
-                }
-            }
+            m_TagSet.Reset(m_Tag | DefaultTag);
+            OnEnable();
         }
 
         /// <summary>
         /// 当更新时
         /// </summary>
-        internal void OnUpdate()
+        void IAbility.OnUpdate()
         {
-            using AbilityContext context = AbilityContext.GetPooled(this);
-            foreach (AbilityFeature feature in m_Features)
+            foreach (AbilityBehaviour behaviour in Behaviours)
             {
-                bool isValid     = feature.IsValid(context);
-                int  activeIndex = m_ActiveFeatures.IndexOf(feature);
-                if (isValid == activeIndex >= 0)
-                {
-                    continue;
-                }
-
-                if (isValid)
-                {
-                    m_ActiveFeatures.Add(feature);
-                    feature.OnEnable();
-                }
-                else
-                {
-                    m_ActiveFeatures.RemoveAt(activeIndex);
-                    feature.OnDisable();
-                }
+                behaviour.OnAbilityUpdate();
             }
 
-            foreach (AbilityFeature activeFeature in m_ActiveFeatures)
-            {
-                activeFeature.OnUpdate();
-            }
+            OnUpdate();
         }
 
         /// <summary>
-        /// 当失去时
+        /// 当禁用时
         /// </summary>
-        internal void OnDisable()
+        void IAbility.OnDisable()
         {
-            IsActive = false;
-            foreach (AbilityFeature activeFeature in m_ActiveFeatures)
-            {
-                activeFeature.OnDisable();
-            }
-
+            OnDisable();
             foreach (AbilityBehaviour behaviour in Behaviours)
             {
                 behaviour.OnAbilityDisable();
             }
-
-            ListPool<AbilityFeature>.Release(m_ActiveFeatures);
-            m_ActiveFeatures = null;
         }
-
-        #endregion
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
             m_Variables ??= new IAbilityVariable[0];
-            m_Features  ??= new AbilityFeature[0];
+            OnBeforeSerialize();
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             m_Variables ??= new IAbilityVariable[0];
-            m_Features  ??= new AbilityFeature[0];
+            OnAfterDeserialize();
         }
     }
 }

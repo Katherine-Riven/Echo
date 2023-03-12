@@ -1,4 +1,5 @@
 ﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Echo.Avatar
@@ -9,20 +10,20 @@ namespace Echo.Avatar
         [Serializable]
         private sealed class Part
         {
-            [SerializeField]
+            [SerializeField, HideLabel, HorizontalGroup]
             public AvatarPartType Type;
 
-            [SerializeField]
+            [SerializeField, HideLabel, HorizontalGroup]
             public SkinnedMeshRenderer Renderer;
         }
 
         [Serializable]
         private sealed class Slot
         {
-            [SerializeField]
+            [SerializeField, HideLabel, HorizontalGroup]
             public AvatarSlotType Type;
 
-            [SerializeField]
+            [SerializeField, HideLabel, HorizontalGroup]
             public Transform Root;
         }
 

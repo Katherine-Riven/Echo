@@ -8,13 +8,13 @@ using UnityEditorInternal;
 
 namespace EchoEditor
 {
-    sealed class NewFeatureAction : EndNameEditAction
+    sealed class NewAssemblyAction : EndNameEditAction
     {
-        [MenuItem("Assets/Create/" + nameof(Echo) + "/Feature")]
+        [MenuItem("Assets/Create/" + nameof(Echo) + "/New Assembly")]
         private static void Execute()
         {
-            NewFeatureAction action = CreateInstance<NewFeatureAction>();
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, "New Feature", EditorIcons.UnityFolderIcon, String.Empty);
+            NewAssemblyAction action = CreateInstance<NewAssemblyAction>();
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, "New Assembly", EditorIcons.UnityFolderIcon, String.Empty);
         }
 
         public override void Action(int instanceId, string pathName, string resourceFile)

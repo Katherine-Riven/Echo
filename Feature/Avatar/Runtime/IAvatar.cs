@@ -2,7 +2,7 @@
 
 namespace Echo.Avatar
 {
-    public interface IAvatar : IGameFeature
+    public interface IAvatar : IGameEntityFeature
     {
         protected internal AvatarProfile                          Profile   { get; set; }
         protected internal Dictionary<AvatarPartType, AvatarPart> PartMap   { get; set; }

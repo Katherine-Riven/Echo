@@ -1,4 +1,6 @@
-﻿namespace Echo.Abilities
+﻿using System;
+
+namespace Echo.Abilities
 {
     public static class AbilityAPI
     {
@@ -6,13 +8,17 @@
         /// 启用能力
         /// </summary>
         /// <param name="owner">持有者</param>
-        /// <param name="profile">能力描述符</param>
-        public static Ability EnableAbility(this IAbilityOwner owner, AbilityProfile profile)
+        /// <param name="ability">能力实例</param>
+        public static void EnableAbility(this IAbilityOwner owner, IAbility ability)
         {
-            Ability ability = AbilitySerializer.FromProfile(profile);
-            ability.OnInitialize(owner);
+            if (ability.IsEnable)
+            {
+                throw new ArgumentException("Ability has already enabled.", nameof(ability));
+            }
+
+            ability.IsEnable = true;
+            ability.Owner    = owner;
             owner.ToEnableAbilities.Add(ability);
-            return ability;
         }
 
         /// <summary>
@@ -20,10 +26,11 @@
         /// </summary>
         /// <param name="owner">持有者</param>
         /// <param name="ability">能力实例</param>
-        public static void DisableAbility(this IAbilityOwner owner, Ability ability)
+        public static void DisableAbility(this IAbilityOwner owner, IAbility ability)
         {
             if (owner.Abilities.Contains(ability) && owner.ToDisableAbilities.Contains(ability) == false)
             {
+                ability.IsEnable = false;
                 owner.ToDisableAbilities.Add(ability);
             }
         }

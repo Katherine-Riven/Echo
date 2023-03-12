@@ -23,7 +23,7 @@ namespace Echo
     /// <summary>
     /// 游戏对象
     /// </summary>
-    public abstract class GameEntity
+    public abstract class GameEntity : IGameEntityFeature
     {
         protected GameEntity(string name, Vector3 position, Quaternion rotation, IGameEntityOrder order)
         {

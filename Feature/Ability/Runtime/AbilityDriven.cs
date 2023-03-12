@@ -12,9 +12,9 @@ namespace Echo.Abilities
         {
             if (entity is IAbilityOwner owner)
             {
-                owner.Abilities          = ListPool<Ability>.Get();
-                owner.ToEnableAbilities  = ListPool<Ability>.Get();
-                owner.ToDisableAbilities = ListPool<Ability>.Get();
+                owner.Abilities          = ListPool<IAbility>.Get();
+                owner.ToEnableAbilities  = ListPool<IAbility>.Get();
+                owner.ToDisableAbilities = ListPool<IAbility>.Get();
             }
         }
 
@@ -22,14 +22,14 @@ namespace Echo.Abilities
         {
             if (entity is IAbilityOwner owner)
             {
-                foreach (Ability ability in owner.Abilities)
+                foreach (IAbility ability in owner.Abilities)
                 {
                     ability.OnDisable();
                 }
 
-                ListPool<Ability>.Release(owner.Abilities);
-                ListPool<Ability>.Release(owner.ToEnableAbilities);
-                ListPool<Ability>.Release(owner.ToDisableAbilities);
+                ListPool<IAbility>.Release(owner.Abilities);
+                ListPool<IAbility>.Release(owner.ToEnableAbilities);
+                ListPool<IAbility>.Release(owner.ToDisableAbilities);
                 owner.Abilities          = null;
                 owner.ToEnableAbilities  = null;
                 owner.ToDisableAbilities = null;
@@ -42,7 +42,7 @@ namespace Echo.Abilities
             {
                 if (entity is IAbilityOwner owner)
                 {
-                    foreach (Ability ability in owner.Abilities)
+                    foreach (IAbility ability in owner.Abilities)
                     {
                         ability.OnUpdate();
                     }
@@ -60,13 +60,13 @@ namespace Echo.Abilities
             {
                 if (entity is IAbilityOwner owner)
                 {
-                    foreach (Ability ability in owner.ToEnableAbilities)
+                    foreach (IAbility ability in owner.ToEnableAbilities)
                     {
                         ability.OnEnable();
                         owner.Abilities.Add(ability);
                     }
 
-                    foreach (Ability ability in owner.ToDisableAbilities)
+                    foreach (IAbility ability in owner.ToDisableAbilities)
                     {
                         ability.OnDisable();
                         owner.Abilities.Remove(ability);

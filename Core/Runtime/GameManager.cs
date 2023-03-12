@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace Echo
@@ -33,12 +35,12 @@ namespace Echo
         /// <summary>
         /// 资源系统
         /// </summary>
-        public static IAssetSystem AssetSystem { get; }
+        public static IAssetSystem AssetSystem { get; private set; }
 
         /// <summary>
         /// UI系统
         /// </summary>
-        public static IUISystem UISystem { get; }
+        public static IUISystem UISystem { get; private set; }
 
         /// <summary>
         /// 切换游戏阶段
@@ -119,6 +121,15 @@ namespace Echo
             }
 
             s_Instance = this;
+            PropertyInfo[] properties = typeof(GameManager).GetProperties(BindingFlags.Public | BindingFlags.Static);
+            foreach (PropertyInfo property in properties)
+            {
+                if (typeof(IGameSystem).IsAssignableFrom(property.PropertyType))
+                {
+                    property.SetValue(null, m_Systems.First(x => property.PropertyType.IsInstanceOfType(x)));
+                }
+            }
+
             for (int i = 0, length = m_Systems.Length; i < length; i++)
             {
                 m_Systems[i].OnInitialize();
