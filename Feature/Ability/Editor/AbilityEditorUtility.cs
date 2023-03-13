@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace EchoEditor.Abilities
 {
-    public static class AbilityDrawerUtility
+    public static class AbilityEditorUtility
     {
         private static readonly List<GenericSelectorItem<Type>>       s_FeatureItems          = new List<GenericSelectorItem<Type>>();
         private static readonly List<GenericSelectorItem<Type>>       s_EffectItems           = new List<GenericSelectorItem<Type>>();
@@ -21,7 +21,7 @@ namespace EchoEditor.Abilities
         public static IReadOnlyList<GenericSelectorItem<Type>>       VariableItems         => s_VariableItems;
         public static IReadOnlyList<GenericSelectorItem<AbilityTag>> TagItems              => s_TagItems;
 
-        static AbilityDrawerUtility()
+        static AbilityEditorUtility()
         {
             foreach (Type type in EditorHelper.AllTypes)
             {
@@ -36,11 +36,11 @@ namespace EchoEditor.Abilities
 
                 if (type.IsSubclassOf(typeof(AbilityFeature)))
                 {
-                    s_FeatureItems.Add(new GenericSelectorItem<Type>(MenuItemAttribute.GetMenuPath(type, typeof(AbilityFeature)), type));
+                    s_FeatureItems.Add(new GenericSelectorItem<Type>(DisplayNameAttribute.GetDisplayPath(type, typeof(AbilityFeature)), type));
                 }
                 else if (type.IsSubclassOf(typeof(AbilityEffect)))
                 {
-                    GenericSelectorItem<Type> item = new GenericSelectorItem<Type>(MenuItemAttribute.GetMenuPath(type, typeof(AbilityEffect)), type);
+                    GenericSelectorItem<Type> item = new GenericSelectorItem<Type>(DisplayNameAttribute.GetDisplayPath(type, typeof(AbilityEffect)), type);
                     s_EffectItems.Add(item);
                     if (type.IsDefined(typeof(CancelableEffectAttribute)))
                     {
@@ -97,6 +97,27 @@ namespace EchoEditor.Abilities
                 }
 
                 return itemName;
+            }
+        }
+
+        public static Ability GetAbility(AbilityProfile profile)
+        {
+            return (Ability) JsonUtility.FromJson(profile.Json, GetAbilityType());
+
+            Type GetAbilityType()
+            {
+                Type baseType = profile.GetType().BaseType;
+                while (baseType != null && baseType.IsGenericType == false && baseType.GetGenericTypeDefinition() != typeof(AbilityProfile<>))
+                {
+                    baseType = baseType.BaseType;
+                }
+
+                if (baseType == null)
+                {
+                    throw new Exception();
+                }
+
+                return baseType.GetGenericArguments()[0];
             }
         }
     }

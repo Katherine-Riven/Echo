@@ -8,6 +8,7 @@ using Sirenix.OdinInspector.Editor.Drawers;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
+using DisplayNameAttribute = Echo.Abilities.DisplayNameAttribute;
 
 namespace EchoEditor.Abilities
 {
@@ -24,7 +25,7 @@ namespace EchoEditor.Abilities
 
         private void AddNewVariable()
         {
-            GenericSelector<Type> selector = new GenericSelector<Type>(string.Empty, false, AbilityDrawerUtility.FeatureItems);
+            GenericSelector<Type> selector = new GenericSelector<Type>(string.Empty, false, AbilityEditorUtility.FeatureItems);
             selector.EnableSingleClickToSelect();
             selector.SelectionConfirmed += delegate(IEnumerable<Type> types)
             {
@@ -50,7 +51,7 @@ namespace EchoEditor.Abilities
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            string text    = MenuItemAttribute.GetMenuName(ValueEntry.SmartValue.GetType());
+            string text    = DisplayNameAttribute.GetDisplay(ValueEntry.SmartValue.GetType());
             string tooltip = ValueEntry.SmartValue.ToString();
             Property.State.Expanded = SirenixEditorGUI.Foldout(Property.State.Expanded, GUIHelper.TempContent(text, tooltip));
             if (SirenixEditorGUI.BeginFadeGroup(UniqueDrawerKey.Create(Property, this), Property.State.Expanded))

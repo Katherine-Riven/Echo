@@ -3,27 +3,106 @@ using System.Collections.Generic;
 using System.Linq;
 using Echo.Abilities;
 using Sirenix.OdinInspector.Editor;
-using Sirenix.OdinInspector.Editor.Drawers;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
+// ReSharper disable UnusedType.Global
+
 namespace EchoEditor.Abilities
 {
-    [DrawerPriority(DrawerPriorityLevel.WrapperPriority)]
-    class AbilityVariableCollectionDrawer<T> : OdinValueDrawer<T> where T : ICollection<IAbilityVariable>
+    class AbilityVariableTableDrawer<T> : OdinValueDrawer<T> where T : ICollection<IAbilityVariable>
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            Action nextCustomAddFunction = CollectionDrawerStaticInfo.NextCustomAddFunction;
-            CollectionDrawerStaticInfo.NextCustomAddFunction = AddNewVariable;
-            CallNextDrawer(label);
-            CollectionDrawerStaticInfo.NextCustomAddFunction = nextCustomAddFunction;
+            SirenixEditorGUI.BeginVerticalList();
+            SirenixEditorGUI.BeginHorizontalToolbar();
+            GUILayout.Label(label);
+            if (SirenixEditorGUI.ToolbarButton(EditorIcons.Plus))
+            {
+                AddNewVariable();
+            }
+
+            SirenixEditorGUI.EndHorizontalToolbar();
+
+            EditorGUI.indentLevel++;
+            foreach (InspectorProperty variable in Property.Children)
+            {
+                SirenixEditorGUI.BeginListItem(false);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
+                GUIHelper.PushHierarchyMode(false);
+                variable.Draw(null);
+                GUIHelper.PopHierarchyMode();
+                EditorGUILayout.EndVertical();
+                if (RemoveButton())
+                {
+                    if (IsUsing(variable))
+                    {
+                        EditorUtility.DisplayDialog("提示", "该变量正在使用，因此无法删除，先取消引用后再删除。", "好的");
+                    }
+                    else
+                    {
+                        Property.Tree.DelayAction(() =>
+                        {
+                            ((ICollectionResolver) Property.ChildResolver).QueueRemove(new[]
+                            {
+                                variable.ValueEntry.WeakSmartValue,
+                            });
+                            Property.ValueEntry.ApplyChanges();
+                        });
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space(2f);
+                SirenixEditorGUI.EndListItem();
+            }
+
+            EditorGUI.indentLevel--;
+
+            SirenixEditorGUI.EndVerticalList();
+        }
+
+        private bool IsUsing(InspectorProperty variable)
+        {
+            foreach (InspectorProperty child in Property.Tree.EnumerateTree(true, true))
+            {
+                if (child == variable)
+                {
+                    continue;
+                }
+
+                if (child.ValueEntry?.WeakSmartValue == variable.ValueEntry.WeakSmartValue)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool RemoveButton()
+        {
+            Rect rect = GUILayoutUtility.GetRect(GUIContent.none, SirenixGUIStyles.IconButton, GUILayout.Width(18f), GUILayout.ExpandHeight(true));
+            if (GUI.Button(rect, GUIContent.none, SirenixGUIStyles.IconButton))
+            {
+                GUIHelper.RemoveFocusControl();
+                return true;
+            }
+
+            if (Event.current.type == EventType.Repaint)
+            {
+                float drawSize = Mathf.Min(rect.height, rect.width);
+                EditorIcons.X.Draw(rect, drawSize);
+            }
+
+            return false;
         }
 
         private void AddNewVariable()
         {
-            GenericSelector<Type> selector = new GenericSelector<Type>(string.Empty, false, AbilityDrawerUtility.VariableItems);
+            GenericSelector<Type> selector = new GenericSelector<Type>(string.Empty, false, AbilityEditorUtility.VariableItems);
             selector.EnableSingleClickToSelect();
             selector.SelectionConfirmed += delegate(IEnumerable<Type> types)
             {
@@ -35,66 +114,87 @@ namespace EchoEditor.Abilities
 
                 object              newVariable = Activator.CreateInstance(type);
                 ICollectionResolver resolver    = (ICollectionResolver) Property.ChildResolver;
-                resolver.QueueAdd(new object[] {newVariable});
+                resolver.QueueAdd(new[] {newVariable});
                 resolver.ApplyChanges();
                 Property.ValueEntry.ApplyChanges();
             };
 
-            selector.ShowInPopup(Event.current.mousePosition);
+            selector.ShowInPopup();
         }
     }
 
-    [DrawerPriority(value: 2000)]
+    [DrawerPriority(value: 3000)]
     class AbilityVariableDrawer<T> : OdinValueDrawer<T> where T : IAbilityVariable
     {
         private InspectorProperty m_NameProperty;
         private InspectorProperty m_ValueProperty;
         private string            m_EditingName;
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-            m_NameProperty  = Property.FindChild(x => x.Name == "m_Name",  false);
-            m_ValueProperty = Property.FindChild(x => x.Name == "m_Value", false);
-        }
-
         protected override void DrawPropertyLayout(GUIContent label)
         {
+            m_NameProperty  ??= Property.FindChild(x => x.Name == "m_Name",  false);
+            m_ValueProperty ??= Property.FindChild(x => x.Name == "m_Value", false);
             bool isNameEmpty = string.IsNullOrEmpty(m_NameProperty.ValueEntry.WeakSmartValue as string);
-            EditorGUILayout.BeginHorizontal();
-            SirenixEditorGUI.Title(typeof(T).Name, string.Empty, TextAlignment.Left, false);
             if (isNameEmpty)
             {
-                SirenixEditorGUI.ErrorMessageBox("Name can't be empty.");
+                EditorGUILayout.HelpBox("Name can't be empty.", MessageType.Error);
             }
-
-            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUIHelper.PushColor(isNameEmpty ? Color.red : GUI.color);
-            EditorGUILayout.PrefixLabel(m_NameProperty.Label);
-            GUIContent content = GUIHelper.TempContent(m_NameProperty.ValueEntry.WeakSmartValue as string);
-            Rect       rect    = GUILayoutUtility.GetRect(content, SirenixGUIStyles.DropDownMiniButton);
-            if (GUI.Button(rect, content, SirenixGUIStyles.DropDownMiniButton))
+            EditorGUILayout.PrefixLabel(typeof(T).Name, SirenixGUIStyles.DropDownMiniButton, SirenixGUIStyles.BoldLabel);
+            DrawName();
+            EditorGUILayout.EndHorizontal();
+            m_ValueProperty.Draw(GUIHelper.TempContent(string.IsNullOrEmpty(ValueEntry.SmartValue.Name) ? "Value" : ValueEntry.SmartValue.Name));
+
+            void DrawName()
             {
-                PopupWindow.Show(rect, new AbilityVariableSelectContent(rect.width, (name) =>
+                GUIHelper.PushColor(isNameEmpty ? Color.red : GUI.color);
+                GUIContent content = GUIHelper.TempContent(m_NameProperty.ValueEntry.WeakSmartValue as string);
+                Rect       rect    = GUILayoutUtility.GetRect(content, SirenixGUIStyles.DropDownMiniButton);
+                if (GUI.Button(rect, content, SirenixGUIStyles.DropDownMiniButton))
                 {
-                    m_NameProperty.ValueEntry.WeakSmartValue = name;
-                    m_NameProperty.ValueEntry.ApplyChanges();
-                }));
+                    PopupWindow.Show(rect, new AbilityVariableSelectContent(rect.width, (x) =>
+                    {
+                        m_NameProperty.ValueEntry.WeakSmartValue = MakeUnique(x);
+                        m_NameProperty.ValueEntry.ApplyChanges();
+                    }));
+                }
+
+                GUIHelper.PopColor();
+            }
+        }
+
+        private string MakeUnique(string name)
+        {
+            string uniqueName = name;
+            int    tryTimes   = 1;
+            while (IsUnique() == false)
+            {
+                uniqueName = $"{name}{tryTimes}";
+                tryTimes++;
             }
 
-            GUIHelper.PopColor();
-            EditorGUILayout.EndHorizontal();
+            return uniqueName;
 
-            m_ValueProperty.Draw();
+            bool IsUnique()
+            {
+                foreach (InspectorProperty child in Property.Parent.Children)
+                {
+                    if (child == Property) continue;
+                    if (((IAbilityVariable) child.ValueEntry.WeakSmartValue).Name == uniqueName)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
     }
 
     class AbilityVariableSelectContent : PopupWindowContent
     {
-        private const string VariablesAbsolutePath    = "m_Ability.m_VariableTable.m_Variables";
-        private const string VariableNameRelativePath = "m_Name";
+        private const string VariablesPath = "m_Variables";
 
         public AbilityVariableSelectContent(float width, Action<string> onSureVariable)
         {
@@ -108,23 +208,24 @@ namespace EchoEditor.Abilities
                 string[]        assets         = AssetDatabase.FindAssets($"t:{nameof(AbilityProfile)}");
                 foreach (string guid in assets)
                 {
-                    string             path                  = AssetDatabase.GUIDToAssetPath(guid);
-                    AbilityProfile     abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
-                    SerializedObject   serializedObject      = new SerializedObject(abilityProfile);
-                    SerializedProperty variableArrayProperty = serializedObject.FindProperty(VariablesAbsolutePath);
-                    for (int i = 0; i < variableArrayProperty.arraySize; i++)
+                    string            path                  = AssetDatabase.GUIDToAssetPath(guid);
+                    AbilityProfile    abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
+                    Ability           ability               = AbilityEditorUtility.GetAbility(abilityProfile);
+                    PropertyTree      abilityTree           = PropertyTree.Create(ability);
+                    InspectorProperty variableArrayProperty = abilityTree.GetPropertyAtPath(VariablesPath);
+                    foreach (var variableProperty in variableArrayProperty.Children)
                     {
-                        SerializedProperty variableProperty     = variableArrayProperty.GetArrayElementAtIndex(i);
-                        SerializedProperty variableNameProperty = variableProperty.FindPropertyRelative(VariableNameRelativePath);
-                        if (string.IsNullOrEmpty(variableNameProperty.stringValue))
+                        InspectorProperty variableNameProperty = variableProperty.FindChild(x => x.Name == "m_Name", false);
+                        string            variableName         = variableNameProperty.ValueEntry.WeakSmartValue?.ToString();
+                        if (string.IsNullOrEmpty(variableName))
                         {
                             continue;
                         }
 
-                        existVariables.Add(variableNameProperty.stringValue);
+                        existVariables.Add(variableName);
                     }
 
-                    serializedObject.Dispose();
+                    abilityTree.Dispose();
                 }
 
                 string[] variableNames = existVariables.ToArray();
@@ -175,47 +276,57 @@ namespace EchoEditor.Abilities
         private class Variable
         {
             public string Name;
-            public bool   IsEditing;
-            public string EditingName;
+
+            private bool   m_IsEditing;
+            private string m_EditingName;
 
             public void OnGUI(Variable[] variables, Action<string> onSure)
             {
                 SirenixEditorGUI.BeginHorizontalToolbar();
-                if (IsEditing)
+                if (m_IsEditing)
                 {
-                    EditingName = SirenixEditorFields.TextField(EditingName);
-                    GUIHelper.PushGUIEnabled(string.IsNullOrEmpty(EditingName) == false && variables.Any(x => x.Name == EditingName && x != this) == false);
+                    m_EditingName = SirenixEditorFields.TextField(m_EditingName);
+                    GUIHelper.PushGUIEnabled(string.IsNullOrEmpty(m_EditingName) == false && variables.Any(x => x.Name == m_EditingName && x != this) == false);
                     if (SirenixEditorGUI.ToolbarButton(EditorIcons.Checkmark))
                     {
-                        if (string.IsNullOrEmpty(EditingName) || variables.Any(x => x.Name == EditingName && x != this))
+                        if (string.IsNullOrEmpty(m_EditingName) || variables.Any(x => x.Name == m_EditingName && x != this))
                         {
                             return;
                         }
 
                         string oldName = Name;
-                        IsEditing = false;
-                        Name      = EditingName;
+                        m_IsEditing = false;
+                        Name        = m_EditingName;
                         string[] assets = AssetDatabase.FindAssets($"t:{nameof(AbilityProfile)}");
                         foreach (string guid in assets)
                         {
-                            string             path                  = AssetDatabase.GUIDToAssetPath(guid);
-                            AbilityProfile     abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
-                            SerializedObject   serializedObject      = new SerializedObject(abilityProfile);
-                            SerializedProperty variableArrayProperty = serializedObject.FindProperty(VariablesAbsolutePath);
-                            for (int i = 0; i < variableArrayProperty.arraySize; i++)
+                            string            path                  = AssetDatabase.GUIDToAssetPath(guid);
+                            AbilityProfile    abilityProfile        = AssetDatabase.LoadAssetAtPath<AbilityProfile>(path);
+                            Ability           ability               = AbilityEditorUtility.GetAbility(abilityProfile);
+                            PropertyTree      abilityTree           = PropertyTree.Create(ability);
+                            InspectorProperty variableArrayProperty = abilityTree.GetPropertyAtPath(VariablesPath);
+                            foreach (InspectorProperty variableProperty in variableArrayProperty.Children)
                             {
-                                SerializedProperty variableProperty     = variableArrayProperty.GetArrayElementAtIndex(i);
-                                SerializedProperty variableNameProperty = variableProperty.FindPropertyRelative(VariableNameRelativePath);
-                                if (variableNameProperty.stringValue != oldName)
+                                InspectorProperty variableNameProperty = variableProperty.FindChild(x => x.Name == "m_Name", false);
+                                string            variableName         = variableNameProperty.ValueEntry.WeakSmartValue.ToString();
+                                if (variableName != oldName)
                                 {
                                     continue;
                                 }
 
-                                variableNameProperty.stringValue = Name;
+                                variableNameProperty.ValueEntry.WeakSmartValue = Name;
                             }
 
-                            serializedObject.ApplyModifiedPropertiesWithoutUndo();
-                            serializedObject.Dispose();
+                            if (abilityTree.ApplyChanges())
+                            {
+                                SerializedObject abilitySerializedObject = new SerializedObject(abilityProfile);
+                                abilitySerializedObject.Update();
+                                abilitySerializedObject.FindProperty("m_Json").stringValue = JsonUtility.ToJson(ability);
+                                abilitySerializedObject.ApplyModifiedPropertiesWithoutUndo();
+                                abilitySerializedObject.Dispose();
+                            }
+
+                            abilityTree.Dispose();
                         }
                     }
 
@@ -230,8 +341,8 @@ namespace EchoEditor.Abilities
 
                     if (SirenixEditorGUI.ToolbarButton(EditorIcons.Refresh))
                     {
-                        IsEditing   = true;
-                        EditingName = Name;
+                        m_IsEditing   = true;
+                        m_EditingName = Name;
                     }
                 }
 

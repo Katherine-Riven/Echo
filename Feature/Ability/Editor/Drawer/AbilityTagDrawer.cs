@@ -16,13 +16,13 @@ namespace EchoEditor.Abilities
 
         private GenericSelector<AbilityTag> ShowSelector(Rect rect)
         {
-            GenericSelector<AbilityTag> selector = new GenericSelector<AbilityTag>(string.Empty, true, AbilityDrawerUtility.TagItems);
+            GenericSelector<AbilityTag> selector = new GenericSelector<AbilityTag>(string.Empty, true, AbilityEditorUtility.TagItems);
             selector.CheckboxToggle   =  true;
             selector.SelectionChanged += SelectorOnSelectionChanged;
 
             AbilityTag       currentValue      = ValueEntry.SmartValue;
             List<AbilityTag> currentSelections = ListPool<AbilityTag>.Get();
-            foreach (var item in AbilityDrawerUtility.TagItems)
+            foreach (var item in AbilityEditorUtility.TagItems)
             {
                 if (currentValue.HasAllTag(item.Value))
                 {

@@ -17,7 +17,7 @@ namespace EchoEditor.Abilities
         protected override void Initialize()
         {
             base.Initialize();
-            m_SelectorItems = Property.GetAttribute<CancelableEffectAttribute>() == null ? AbilityDrawerUtility.EffectItems : AbilityDrawerUtility.CancelableEffectItems;
+            m_SelectorItems = Property.GetAttribute<CancelableEffectAttribute>() == null ? AbilityEditorUtility.EffectItems : AbilityEditorUtility.CancelableEffectItems;
         }
 
         protected override void DrawPropertyLayout(GUIContent label)
@@ -56,7 +56,7 @@ namespace EchoEditor.Abilities
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
-            string text    = MenuItemAttribute.GetMenuName(ValueEntry.SmartValue.GetType());
+            string text    = DisplayNameAttribute.GetDisplay(ValueEntry.SmartValue.GetType());
             string tooltip = ValueEntry.SmartValue.ToString();
             Property.State.Expanded = SirenixEditorGUI.Foldout(Property.State.Expanded, GUIHelper.TempContent(text, tooltip));
             if (SirenixEditorGUI.BeginFadeGroup(UniqueDrawerKey.Create(Property, this), Property.State.Expanded))
