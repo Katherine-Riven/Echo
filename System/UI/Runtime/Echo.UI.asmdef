@@ -1,0 +1,16 @@
+{
+    "name": "Echo.UI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:902caed0e6bf8d34483f19d5525c45dc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

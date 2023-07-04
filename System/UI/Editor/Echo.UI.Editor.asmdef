@@ -1,0 +1,18 @@
+{
+    "name": "Echo.UI.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:902caed0e6bf8d34483f19d5525c45dc",
+        "GUID:ec3431c4ea6a9464e895d1e80e0263a8",
+        "GUID:a07512818baf4a819eade307cfc4e850"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

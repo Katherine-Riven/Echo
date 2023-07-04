@@ -1,0 +1,8 @@
+{
+  "name": "com.echo",
+  "displayName": "Echo",
+  "description": "To do",
+  "type": "library",
+  "version": "0.0.1",
+  "license": "MIT"
+}
