@@ -106,7 +106,7 @@ namespace Echo
             {
                 for (; m_Index < m_List.Count; m_Index++)
                 {
-                    if (m_List[m_Index] is T temp)
+                    if (m_List[m_Index] is T temp && temp.IsActive)
                     {
                         m_Current = temp;
                         return true;
