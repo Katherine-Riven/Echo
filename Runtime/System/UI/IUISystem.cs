@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Echo.UI;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Echo.UI
+namespace Echo
 {
     public interface IUISystem : IGameSystem
     {
@@ -13,9 +14,9 @@ namespace Echo.UI
         void        EnableInteraction();
         void        DisableInteraction();
 
-        void  PopTip(string    text);
+        void  PopTip(string     text);
         IView Show<TView>(IArgs args = null) where TView : class, IView, new();
-        void  Hide(IView       view);
+        void  Hide(IView        view);
 
         void ReleaseAllUnusedView();
     }

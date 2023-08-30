@@ -36,15 +36,11 @@ namespace Echo.UI
         {
         }
 
-        void IGameSystem.OnUpdate()
+        void IGameSystem.OnStartGame()
         {
         }
 
-        void IGameSystem.OnFixedUpdate()
-        {
-        }
-
-        void IGameSystem.OnLateUpdate()
+        void IGameSystem.OnStopGame()
         {
         }
 

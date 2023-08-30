@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Echo.Asset;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Echo.Asset
+namespace Echo
 {
     public interface IAssetSystem : IGameSystem
     {

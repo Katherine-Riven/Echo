@@ -6,69 +6,6 @@ using UnityEngine.Pool;
 
 namespace Echo
 {
-    public interface IGameEntity
-    {
-        string Name     { get; }
-        bool   IsActive { get; }
-        void   Instantiate(Vector3 position, Quaternion rotation);
-        void   Destroy();
-    }
-
-    public interface IGameEntityOrder
-    {
-        IGameEntityReference Reference { get; }
-    }
-
-    public interface IGameEntityReference
-    {
-        GameObject InstantiateInstance(Vector3 position, Quaternion rotation);
-        void       ReleaseInstance(GameObject  instance);
-    }
-
-    public abstract class GameEntity : IGameEntity
-    {
-        protected GameEntity(string name, IGameEntityOrder order)
-        {
-            Name        = name;
-            m_Reference = order.Reference;
-        }
-
-        private readonly IGameEntityReference m_Reference;
-
-        private GameObject m_Instance;
-
-        public string Name { get; }
-
-        public bool IsActive => GameManager.IsEntityActive(this);
-
-        public void Instantiate(Vector3 position, Quaternion rotation)
-        {
-            if (GameManager.RegisterEntity(this) == false)
-            {
-                throw new Exception();
-            }
-
-            m_Instance      = m_Reference.InstantiateInstance(position, rotation);
-            m_Instance.name = Name;
-            OnInstantiate(m_Instance);
-        }
-
-        public void Destroy()
-        {
-            if (GameManager.UnRegisterEntity(this) == false)
-            {
-                throw new Exception();
-            }
-
-            OnDestroy();
-            m_Reference.ReleaseInstance(m_Instance);
-            m_Instance = null;
-        }
-
-        protected abstract void OnInstantiate(GameObject instance);
-        protected abstract void OnDestroy();
-    }
-
     public readonly struct GameEntityQuery<T> : IEnumerable<T>, IDisposable where T : class, IGameEntity
     {
         internal GameEntityQuery(List<GameEntity> entities)
