@@ -2,7 +2,7 @@
 
 namespace Echo.Abilities
 {
-    public interface IAbilityOwner : IGameEntity
+    public interface IAbilityOwner : IGameAvatar
     {
         protected internal List<IAbility> Abilities { get; }
     }

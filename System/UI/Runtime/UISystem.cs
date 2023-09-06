@@ -83,7 +83,6 @@ namespace Echo.UI
             IView result = PopOrNewView<TView>();
             m_ViewStack.Add(result);
             result.RectTransform.SetAsLastSibling();
-            result.HandleArgs(args);
             return result;
         }
 

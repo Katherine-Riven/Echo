@@ -6,21 +6,20 @@ namespace Echo
 {
     public interface IAssetSystem : IGameSystem
     {
-        Object                   LoadAsset(IAssetKey                key);
-        T                        LoadAsset<T>(IAssetKey             key) where T : Object;
-        IAsyncOperationHandle    LoadAssetAsync(IAssetKey           key);
-        IAsyncOperationHandle<T> LoadAssetAsync<T>(IAssetKey        key) where T : Object;
-        void                     ReleaseAsset(IAsyncOperationHandle handle);
+        IAssetHandle         LoadAsset(IAssetKey         key);
+        IAssetHandle<T>      LoadAsset<T>(IAssetKey      key) where T : Object;
+        IAsyncAssetHandle    LoadAssetAsync(IAssetKey    key);
+        IAsyncAssetHandle<T> LoadAssetAsync<T>(IAssetKey key) where T : Object;
+        void                 ReleaseAsset(IAssetHandle   handle);
 
-        Scene                        LoadScene(IAssetKey                       key, LoadSceneMode loadMode = LoadSceneMode.Single);
-        IAsyncOperationHandle<Scene> LoadSceneAsync(IAssetKey                  key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true);
-        void                         ReleaseScene(IAsyncOperationHandle<Scene> handle);
+        IAssetHandle<Scene>      LoadScene(IAssetKey              key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true);
+        IAsyncAssetHandle<Scene> LoadSceneAsync(IAssetKey         key, LoadSceneMode loadMode = LoadSceneMode.Single, bool activateOnLoad = true);
+        void                     ReleaseScene(IAssetHandle<Scene> handle);
 
-        GameObject                        Instantiate(IAssetKey                 key, Transform parent = null, bool       instantiateInWorldSpace    = false);
-        GameObject                        Instantiate(IAssetKey                 key, Vector3   position,      Quaternion rotation, Transform parent = null);
-        IAsyncOperationHandle<GameObject> InstantiateAsync(IAssetKey            key, Transform parent = null, bool       instantiateInWorldSpace    = false);
-        IAsyncOperationHandle<GameObject> InstantiateAsync(IAssetKey            key, Vector3   position,      Quaternion rotation, Transform parent = null);
-        bool                              ReleaseInstance(GameObject            instance);
-        bool                              ReleaseInstance(IAsyncOperationHandle handle);
+        IAssetHandle<GameObject>      Instantiate(IAssetKey                    key, Transform parent = null, bool       instantiateInWorldSpace    = false);
+        IAssetHandle<GameObject>      Instantiate(IAssetKey                    key, Vector3   position,      Quaternion rotation, Transform parent = null);
+        IAsyncAssetHandle<GameObject> InstantiateAsync(IAssetKey               key, Transform parent = null, bool       instantiateInWorldSpace    = false);
+        IAsyncAssetHandle<GameObject> InstantiateAsync(IAssetKey               key, Vector3   position,      Quaternion rotation, Transform parent = null);
+        void                          ReleaseInstance(IAssetHandle<GameObject> handle);
     }
 }

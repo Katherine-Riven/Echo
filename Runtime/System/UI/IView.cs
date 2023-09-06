@@ -8,8 +8,5 @@ namespace Echo.UI
         IAssetKey     AssetKey      { get; }
         GameObject    GameObject    { get; }
         RectTransform RectTransform { get; }
-
-        void HandleArgs(IArgs args);
-        void OnUpdate();
     }
 }

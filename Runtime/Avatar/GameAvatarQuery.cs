@@ -6,35 +6,35 @@ using UnityEngine.Pool;
 
 namespace Echo
 {
-    public readonly struct GameEntityQuery<T> : IEnumerable<T>, IDisposable where T : class, IGameEntity
+    public readonly struct GameAvatarQuery<T> : IEnumerable<T>, IDisposable where T : IGameAvatar
     {
-        internal GameEntityQuery(List<GameEntity> entities)
+        internal GameAvatarQuery(List<IGameAvatar> entities)
         {
-            m_List          = ListPool<GameEntity>.Get();
+            m_List          = ListPool<IGameAvatar>.Get();
             m_List.Capacity = Mathf.Max(m_List.Capacity, entities.Capacity);
-            foreach (var entity in entities)
+            foreach (IGameAvatar avatar in entities)
             {
-                m_List.Add(entity);
+                if (avatar is T) m_List.Add(avatar);
             }
         }
 
-        private readonly List<GameEntity> m_List;
+        private readonly List<IGameAvatar> m_List;
 
         public Enumerator             GetEnumerator() => new Enumerator(m_List);
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
         IEnumerator IEnumerable.      GetEnumerator() => GetEnumerator();
-        void IDisposable.             Dispose()       => ListPool<GameEntity>.Release(m_List);
+        void IDisposable.             Dispose()       => ListPool<IGameAvatar>.Release(m_List);
 
         public struct Enumerator : IEnumerator<T>
         {
-            internal Enumerator(List<GameEntity> entities)
+            internal Enumerator(List<IGameAvatar> entities)
             {
                 m_List    = entities;
-                m_Current = null;
+                m_Current = default;
                 m_Index   = 0;
             }
 
-            private readonly List<GameEntity> m_List;
+            private readonly List<IGameAvatar> m_List;
 
             private T   m_Current;
             private int m_Index;
@@ -43,7 +43,7 @@ namespace Echo
             {
                 for (; m_Index < m_List.Count; m_Index++)
                 {
-                    if (m_List[m_Index] is T temp && temp.IsActive)
+                    if (m_List[m_Index] is T temp && temp.HasBeenDestroyed == false)
                     {
                         m_Current = temp;
                         return true;
@@ -55,7 +55,7 @@ namespace Echo
 
             public void Reset()
             {
-                m_Current = null;
+                m_Current = default;
                 m_Index   = 0;
             }
 
